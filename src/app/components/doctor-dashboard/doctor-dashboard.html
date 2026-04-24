@@ -1,0 +1,56 @@
+<header class="topbar">
+    <div class="logo">
+      <div class="logo-icon">✣</div>
+      <div class="logo-text">
+        <strong>1C Hospital</strong>
+        <span>Doctor Profile</span>
+      </div>
+    </div>
+ 
+    <nav class="nav-links">
+      <a href="#">Profile</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+</header>
+
+<div class="outer-container bg-light p-4" style="min-height: 100vh;">
+    <div class="inner-container bg-white rounded-4 shadow-sm p-3 mb-4 d-flex justify-content-between align-items-center border border-2" style="border-color: #8b5cf6;">
+        <div>
+            <img [src]="url" alt="Profile Pic" id="profile_img" style="width: 80px; height: 80px; object-fit: cover;">
+        </div>
+        <div class="flex-grow-1 ms-4 mt-2">
+            <h4 class="mb-0 fs-5 text-dark fw-normal">{{Name}} {{degree}}</h4>
+            <br class="d-none">
+            <h5 class="mb-0 mt-2 fs-6 text-dark fw-normal">{{department}}</h5>
+        </div>
+        <div>
+            <p class="mb-0 me-3 fw-medium">Exp: {{experience}} yrs+</p>
+        </div>
+    </div>
+    
+    <div class="d-flex gap-3 mb-4">
+       
+     <button (click)="toggleButton()" class="btn btn-success  text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+        {{ flag === 1 ? 'View Past Consultations' : 'View Current Appointments' }}
+    </button>
+        <button (click)="editAvailability()" class="btn btn-success  text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">Edit Availability</button>
+    </div>
+    
+    <div class="bg-white rounded-4 shadow-sm p-4" style="min-height: 350px;">
+        @if(flag === 1){
+            <h4>Upcoming Appointments</h4>
+            <div *ngFor="let val of patientList" class="border-bottom pb-2 mb-3">
+                <p class="mb-1 fw-bold text-dark">{{val.name}}</p>
+                <p class="mb-1 text-secondary small">Age: {{val.age}}</p>
+                <p class="mb-0 text-muted">{{val.medicalHistory}}</p>
+                <button>View More</button>
+            </div>
+        }@else if(flag === 2){
+            <h5>Past Consultations</h5>
+            <app-past-consultation></app-past-consultation>
+        }@else if(flag === 3){
+            <app-doctor-availability-slot></app-doctor-availability-slot>
+        }
+    </div>
+</div>
