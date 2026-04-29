@@ -1,0 +1,271 @@
+<div class="dashboard-page">
+  <!-- PROFILE HERO -->
+  <section class="profile-hero">
+    <div class="profile-left">
+      <div class="avatar">
+        <div class="avatar-inner">{{ patientInitials }}</div>
+      </div>
+
+      <div>
+        <p class="hero-eyebrow">Patient Profile</p>
+        <h1>{{ patientDetails?.name }}</h1>
+
+        <div class="profile-meta">
+          <span>Patient ID: {{ patientDetails?.patientId }}</span>
+          <span>{{ patientDetails?.address }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-right">
+      <div class="stat-box">
+        <label>Upcoming</label>
+        <strong>{{ upcomingCount }}</strong>
+      </div>
+
+      <div class="stat-box">
+        <label>Completed</label>
+        <strong>{{ completedCount }}</strong>
+      </div>
+
+      <a routerLink="/book" class="primary-btn">Book Appointment</a>
+    </div>
+  </section>
+
+  <!-- SNAPSHOT -->
+  <section class="snapshot">
+    <div>
+      <span>Blood Group</span>
+      <strong>{{ patientDetails?.bloodGroup }}</strong>
+    </div>
+
+    <div>
+      <span>Gender</span>
+      <strong>{{ patientDetails?.gender }}</strong>
+    </div>
+
+    <div>
+      <span>Phone</span>
+      <strong>{{ patientDetails?.contact }}</strong>
+    </div>
+
+    <div>
+      <span>Email</span>
+      <strong>{{ patientDetails?.email }}</strong>
+    </div>
+  </section>
+
+  <!-- TAB BUTTONS -->
+  <div class="tab-buttons">
+    <button
+      class="tab-btn"
+      type="button"
+      [class.active]="activeTab === 'appointments'"
+      (click)="setActiveTab('appointments')">
+      Appointments
+    </button>
+
+    <button
+      class="tab-btn"
+      type="button"
+      [class.active]="activeTab === 'history'"
+      (click)="setActiveTab('history')">
+      Medical History
+    </button>
+
+    <button
+      class="tab-btn"
+      type="button"
+      [class.active]="activeTab === 'personal'"
+      (click)="setActiveTab('personal')">
+      Personal Details
+    </button>
+  </div>
+
+  <!-- APPOINTMENTS TAB -->
+  <section *ngIf="activeTab === 'appointments'" class="content-card">
+    <h2>Upcoming Appointment</h2>
+
+    <div *ngIf="nextAppointment as next; else noNext" class="appointment-box">
+      <h3>Doctor Name: {{ next.doctorName }}</h3>
+      <p>Consultation</p>
+
+      <div class="appt-info">
+        <div>
+          <label>Date</label>
+          <strong>{{ next.date }}</strong>
+        </div>
+
+        <div>
+          <label>Time</label>
+          <strong>{{ next.time }}</strong>
+        </div>
+
+        <div>
+          <label>Status</label>
+          <strong>{{ next.status }}</strong>
+        </div>
+
+      </div>
+
+      <a class="primary-btn sm" [routerLink]="['/modify', next.appoitmentId]">
+          Modify Appointment
+      </a>
+    </div>
+
+    <ng-template #noNext>
+      <div class="empty-box">
+        <h3>No Upcoming Appointment</h3>
+        <p>You can schedule your next appointment anytime.</p>
+        <a routerLink="/book" class="primary-btn sm">Book Now</a>
+      </div>
+    </ng-template>
+
+    <h2 class="mt-30">All Appointments</h2>
+
+    <div class="list-row" *ngFor="let item of appointments">
+      <div>
+        <strong>Doctor Name: {{ item.doctorName }}</strong>
+      
+        <span>
+          {{ item.date }}
+        </span>
+
+      <span>
+          {{ item.time }}
+      </span>
+
+      </div>
+      <span class="status" [class.upcoming]="item.status === 'Scheduled'">
+        {{ item.status }}
+      </span>
+
+
+
+      
+    </div>
+  </section>
+
+  <!-- MEDICAL HISTORY TAB -->
+<section *ngIf="activeTab === 'history'" class="content-card">
+  <app-past-consultation-list></app-past-consultation-list>
+</section>
+
+
+  <!-- PERSONAL DETAILS TAB -->
+<section *ngIf="activeTab === 'personal'" class="content-card">
+  <div class="header-row">
+    <h2>Personal Details</h2>
+
+    <button
+      class="primary-btn sm"
+      *ngIf="!isEditingPersonal"
+      (click)="beginEditPersonal()">
+      Update
+    </button>
+  </div>
+
+  <div *ngIf="showSavedBanner" class="saved-banner">
+    ✔ Personal details updated successfully
+  </div>
+
+  <div class="details-view">
+
+    <!-- READ ONLY FIELDS -->
+    <div>
+      <label>Full Name</label>
+      <strong>{{ patientDetails?.name }}</strong>
+    </div>
+
+    <div>
+      <label>Patient ID</label>
+      <strong>{{ patientDetails?.patientId }}</strong>
+    </div>
+
+    <div>
+      <label>Gender</label>
+      <strong>{{ patientDetails?.gender }}</strong>
+    </div>
+
+    <div>
+      <label>Age</label>
+      <strong>{{ patientDetails?.age }}</strong>
+    </div>
+
+    <div>
+      <label>Blood Group</label>
+      <strong>{{ patientDetails?.bloodGroup }}</strong>
+    </div>
+
+    <!-- EDITABLE: PHONE -->
+    <div>
+      <label>Phone</label>
+
+      <strong *ngIf="!isEditingPersonal">
+        {{ patientDetails?.contact }}
+      </strong>
+
+      <input
+        *ngIf="isEditingPersonal"
+        type="text"
+        [(ngModel)]="editableDetails.contact" />
+    </div>
+
+    <!-- EDITABLE: EMAIL -->
+    <div>
+      <label>Email</label>
+
+      <strong *ngIf="!isEditingPersonal">
+        {{ patientDetails?.email }}
+      </strong>
+
+      <input
+        *ngIf="isEditingPersonal"
+        type="email"
+        [(ngModel)]="editableDetails.email" />
+    </div>
+
+    <!-- EDITABLE: ADDRESS -->
+    <div class="wide">
+      <label>Address</label>
+
+      <strong *ngIf="!isEditingPersonal">
+        {{ patientDetails?.address }}
+      </strong>
+
+      <input
+        *ngIf="isEditingPersonal"
+        type="text"
+        [(ngModel)]="editableDetails.address" />
+    </div>
+
+    <!-- EDITABLE: ALLERGY -->
+    <div>
+      <label>Allergies</label>
+
+      <strong *ngIf="!isEditingPersonal">
+        {{ patientDetails?.allergy?.join(', ') }}
+      </strong>
+
+      <input
+        *ngIf="isEditingPersonal"
+        type="text"
+        [(ngModel)]="editableDetails.allergy" />
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS (ONLY IN EDIT MODE) -->
+  <div class="form-actions" *ngIf="isEditingPersonal">
+    <button class="primary-btn sm" (click)="savePersonalDetails()">
+      Save
+    </button>
+
+    <button class="ghost-btn" type="button" (click)="cancelPersonalEdit()">
+      Cancel
+    </button>
+  </div>
+</section>
+
+  
+
+</div>

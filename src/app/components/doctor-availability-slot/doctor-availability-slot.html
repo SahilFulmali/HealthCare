@@ -1,10 +1,11 @@
 <h4>Edit Availability</h4>
 <div class="p-4 border rounded shadow-sm bg-white d-flex" id="date-container">
         <div class="mb-4">
-            <label class="form-label">Select Date between {{date|date:'mediumDate'}}-{{endDate|date:'mediumDate'}}</label>
-            <input type="date" class="form-control" 
-           [(ngModel)]="selectedDate" 
-           (change)="onDateChange()">
+            <label class="form-label">Select Date: </label><br>
+            <select [(ngModel)]="selectedDate" (change)="onDateChange()">
+                <option *ngFor="let val of dateRange" [value]="val">{{val|date:'mediumDate'}}</option>
+            </select>
+            
         </div>
 
         <div *ngIf="selectedDate">
@@ -36,5 +37,4 @@
                 Save Changes
             </button>
         </div>
-
-    </div>
+</div>

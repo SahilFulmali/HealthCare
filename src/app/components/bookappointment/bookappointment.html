@@ -1,0 +1,147 @@
+<div class="dashboard-page">
+
+  
+
+  <section class="content-card">
+    <a routerLink="/patient" class="ghost-btn">
+      Back to Dashboard
+    </a>
+    <h2>Book New Appointment</h2>
+    <p class="muted">
+      Fill in the details below to schedule your consultation.
+    </p>
+
+    <div *ngIf="booked" class="saved-banner">
+      ✅ Appointment booked successfully!
+    </div>
+
+    <form
+      #apptForm="ngForm"
+      (ngSubmit)="apptForm.valid && submitAppointment()"
+      class="edit-form">
+
+      <div class="form-grid">
+
+        <!-- Doctor -->
+        <label>
+          <span>Doctor</span>
+          <select
+            name="doctorId"
+            [(ngModel)]="appointment.doctorId"
+            (change)="onDateChange()"
+            required
+            #doctorId="ngModel">
+            <option value="" disabled>Select doctor</option>
+            <option *ngFor="let d of doctors" [value]="d.id">
+              {{ d.name }} ({{ d.department }})
+            </option>
+          </select>
+
+          <small class="error" *ngIf="doctorId.invalid && doctorId.touched">
+            Doctor is required
+          </small>
+        </label>
+
+        <!-- Date -->
+        <label>
+          <span>Date</span>
+          <select
+            name="date"
+            [(ngModel)]="appointment.date"
+            (change)="onDateChange()"
+            required
+            #date="ngModel">
+            <option value="" disabled>Select date</option>
+            <option *ngFor="let d of availableDates" [value]="d">
+              {{ d }}
+            </option>
+          </select>
+
+          <small class="error" *ngIf="date.invalid && date.touched">
+            Date is required
+          </small>
+        </label>
+
+        <!-- Time -->
+        <label>
+          <span>Time</span>
+          <select
+            name="time"
+            [(ngModel)]="appointment.time"
+            required
+            #time="ngModel">
+            <option value="" disabled>Select time</option>
+            <option
+              *ngFor="let slot of timeSlots"
+              [value]="slot.time"
+              [disabled]="slot.disabled">
+              {{ slot.time }} {{ slot.disabled ? '(Unavailable)' : '' }}
+            </option>
+          </select>
+
+          <small class="error" *ngIf="time.invalid && time.touched">
+            Time is required
+          </small>
+        </label>
+
+        <!-- Mode -->
+        <label>
+          <span>Consultation Type</span>
+          <select
+            name="mode"
+            [(ngModel)]="appointment.mode"
+            required
+            #mode="ngModel">
+            <option value="" disabled>Select mode</option>
+            <option>In-person</option>
+            <option>Online</option>
+          </select>
+
+          <small class="error" *ngIf="mode.invalid && mode.touched">
+            Consultation type is required
+          </small>
+        </label>
+
+        <!-- Reason -->
+        <label class="wide">
+          <span>Reason for Visit</span>
+          <textarea
+            rows="3"
+            name="reason"
+            [(ngModel)]="appointment.reason"
+            required
+            minlength="5"
+            #reason="ngModel">
+          </textarea>
+
+          
+          <small  *ngIf="reason.invalid && reason.touched">
+            <span class="error" *ngIf="reason.errors?.['required']">
+              Reason is required
+            </span>
+            <span *ngIf="reason.errors?.['minlength']">
+              Minimum 5 characters required
+            </span>
+          </small>
+        </label>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="primary-btn sm"
+          [disabled]="apptForm.invalid">
+          Book Appointment
+        </button>
+
+        <button type="reset" class="ghost-btn sm">
+          Clear
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+
+</div>

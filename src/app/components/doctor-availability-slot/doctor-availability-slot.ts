@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { availability } from '../../availability';
+import { AVAILABILITY } from '../../mockdata/availability.mock';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -11,23 +11,46 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class DoctorAvailabilitySlot {
+  //doctor that is logged in from token 
     id = 2;
-    allData = availability;
+
+  
+    allData = AVAILABILITY;
   
   selectedDate: string = ""; // Bound to <input type="date">
   
   filteredSlots: any[] = []; // Slots for the selected day
   doctorRecord: any;
+
+
   date!:Date;
   endDate!:Date;
+  dateRange: Date[] = [];
 
   ngOnInit() {
-    this.doctorRecord = this.allData.find(d => d.doctorId === this.id);
+      this.doctorRecord = this.allData.find(d => d.doctorId === this.id);
+      this.setDateFunction();
+
+  }
+  setDateFunction(){
       this.date = new Date();
       this.endDate = new Date(this.date);
       this.endDate.setDate(this.date.getDate() + 6);
-
+      this.generateRange();
   }
+
+  generateRange(){
+    const range: Date[] = [];
+
+    for (let i = 0; i <= 6; i++) {
+      const d = new Date(this.date);
+      d.setDate(this.date.getDate() + i);
+      range.push(d);
+    }
+
+    this.dateRange = range;
+  }
+
 
   // Triggered when date input changes
   onDateChange() {
@@ -43,4 +66,6 @@ export class DoctorAvailabilitySlot {
     console.log("Updated Data:", this.doctorRecord);
     this.onDateChange();
   }
+
+    
 }

@@ -1,0 +1,115 @@
+<div class="dashboard-page" *ngIf="appointment && doctor">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-icon">✣</div>
+      <div class="logo-text">
+        <strong>1C Hospital</strong>
+        <span>Modify Appointment</span>
+      </div>
+    </div>
+
+    <a routerLink="/dashboard" class="ghost-btn">
+      Back to Dashboard
+    </a>
+  </header>
+
+  <!-- CONTENT -->
+  <section class="content-card">
+
+    <h2>Appointment Details</h2>
+
+    <!-- READ ONLY DETAILS -->
+    <div class="details-view">
+      <div>
+        <label>Doctor Name</label>
+        <strong>{{ doctor.name }}</strong>
+      </div>
+
+      <div>
+        <label>Specialisation</label>
+        <strong>{{ doctor.department }}</strong>
+      </div>
+
+      <div>
+        <label>Current Date</label>
+        <strong>{{ appointment.date }}</strong>
+      </div>
+
+      <div>
+        <label>Current Time</label>
+        <strong>{{ appointment.time }}</strong>
+      </div>
+
+      <div>
+        <label>Status</label>
+        <strong>{{ appointment.status }}</strong>
+      </div>
+    </div>
+
+    <h3 class="mt-20">Modify Date &amp; Time</h3>
+
+    <!-- FORM -->
+    <form
+      #modifyForm="ngForm"
+      (ngSubmit)="modifyForm.valid && updateAppointment()">
+
+      <div class="form-grid">
+
+        <!-- NEW DATE -->
+        <label>
+          <span>New Date</span>
+          <select
+            name="date"
+            [(ngModel)]="appointment.date"
+            (change)="onDateChange()"
+            required>
+            <option value="" disabled>Select date</option>
+            <option *ngFor="let d of availableDates" [value]="d">
+              {{ d }}
+            </option>
+          </select>
+        </label>
+
+        <!-- NEW TIME -->
+        <label>
+          <span>New Time</span>
+          <select
+            name="time"
+            [(ngModel)]="appointment.time"
+            required>
+            <option value="" disabled>Select time</option>
+            <option
+              *ngFor="let slot of timeSlots"
+              [value]="slot.time"
+              [disabled]="slot.disabled">
+              {{ slot.time }} {{ slot.disabled ? '(Unavailable)' : '' }}
+            </option>
+          </select>
+        </label>
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="primary-btn sm"
+          [disabled]="modifyForm.invalid">
+          Update Appointment
+        </button>
+
+        <button
+          type="button"
+          class="danger-btn sm"
+          (click)="cancelAppointment()">
+          Cancel Appointment
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+
+</div>

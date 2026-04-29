@@ -82,3 +82,9 @@
 .nav-links a:hover {
   color: var(--primary);
 }
+
+.button{
+  background: linear-gradient(135deg, #0f766e, #0f7db7);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(15, 118, 110, 0.18);
+}
