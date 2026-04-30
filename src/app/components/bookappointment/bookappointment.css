@@ -276,3 +276,50 @@ input[disabled] {
     flex-direction: column;
   }
 }
+/* ───────── DISABLED PRIMARY BUTTON (FORM SUBMIT) ───────── */
+
+.primary-btn:disabled,
+.primary-btn[disabled] {
+  background: #cfd8dc !important;       /* soft grey */
+  color: #6b7280 !important;            /* muted text */
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 0.75;
+}
+
+/* Disable hover / lift when button is disabled */
+.primary-btn:disabled:hover,
+.primary-btn[disabled]:hover {
+  background: #cfd8dc !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* ───────── FORM ACTIONS ALIGN RIGHT ───────── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;  /* ✅ buttons right side */
+  gap: 12px;
+}
+/* ───────── CARD HEADER (TITLE + BACK BUTTON) ───────── */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+/* Keep title clean */
+.card-header h2 {
+  margin: 0;
+}
+
+/* Back button sizing consistency */
+.card-header .back-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+}

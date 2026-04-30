@@ -21,12 +21,15 @@ import { PastConsultationList } from '../past-consultation-list/past-consultatio
 })
 export class PatientDashboard implements OnInit {
 
-  /* ---------------- TABS ---------------- */
+  /* ---------------- MAIN TABS ---------------- */
   activeTab: 'appointments' | 'history' | 'personal' = 'appointments';
 
   setActiveTab(tab: 'appointments' | 'history' | 'personal'): void {
     this.activeTab = tab;
   }
+
+  /* ---------------- APPOINTMENT SUB-TABS ---------------- */
+  appointmentView: 'upcoming' | 'past' = 'upcoming';
 
   /* ---------------- DATA ---------------- */
   patientDetails: Patient | null = null;
@@ -52,9 +55,7 @@ export class PatientDashboard implements OnInit {
   private loadPatient(): void {
     this.patientDetails = this.authService.getLoggedInPatient();
 
-    if (!this.patientDetails) {
-      return;
-    }
+    if (!this.patientDetails) return;
 
     this.loadAppointments(this.patientDetails.patientId);
     this.medicalHistory = this.patientDetails.medicalHistory;
@@ -63,7 +64,7 @@ export class PatientDashboard implements OnInit {
   get patientInitials(): string {
     return this.patientDetails?.name
       .split(' ')
-      .map((n: string) => n[0])
+      .map(n => n[0])
       .join('') || '';
   }
 
@@ -72,7 +73,7 @@ export class PatientDashboard implements OnInit {
     const rawAppointments: Appointment[] =
       this.appointmentService.getByPatientId(patientId);
 
-    this.appointments = rawAppointments.map((app: Appointment) => {
+    this.appointments = rawAppointments.map(app => {
       const doctor: Doctor | undefined =
         this.doctorService.getDoctorById(app.doctor);
 
@@ -83,6 +84,18 @@ export class PatientDashboard implements OnInit {
     });
   }
 
+
+  /*  UPCOMING (Scheduled) */
+  get upcomingAppointments(): (Appointment & { doctorName: string })[] {
+    return this.appointments.filter(a => a.status === 'Scheduled'); 
+  }
+
+  /*  PAST (Completed) */
+  get pastAppointments(): (Appointment & { doctorName: string })[] {
+    return this.appointments.filter(a => a.status !== 'Scheduled');
+  }
+
+  /*  NEXT UPCOMING APPOINTMENT */
   get nextAppointment(): (Appointment & { doctorName: string }) | null {
     return (
       this.appointments
@@ -94,55 +107,74 @@ export class PatientDashboard implements OnInit {
     );
   }
 
+  /*  COUNTS */
   get upcomingCount(): number {
-    return this.appointments.filter(
-      a => a.status === 'Scheduled'
-    ).length;
+    return this.appointments.filter(a => a.status === 'Scheduled').length;
   }
 
   get completedCount(): number {
-    return this.appointments.filter(
-      a => a.status !== 'Scheduled'
-    ).length;
+    return this.appointments.filter(a => a.status !== 'Scheduled').length;
   }
 
-  /* ---------------- PERSONAL EDIT ---------------- */
-beginEditPersonal(): void {
-  if (!this.patientDetails) return;
+  /*  FILTERED APPOINTMENTS FOR UI */
+  get filteredAppointments(): (Appointment & { doctorName: string })[] {
+    if (this.appointmentView === 'upcoming') {
+      return this.appointments.filter(a => a.status === 'Scheduled');
+    }
+    return this.appointments.filter(a => a.status !== 'Scheduled');
+  }
 
-  this.editableDetails = {
-    email: this.patientDetails.email ?? '',
-    contact: this.patientDetails.contact ?? '',
-    address: this.patientDetails.address ?? '',
-    allergy: this.patientDetails.allergy
-      ? [...this.patientDetails.allergy]
-      : []
-  };
+  /* ---------------- PERSONAL DETAILS EDIT ---------------- */
+  beginEditPersonal(): void {
+    if (!this.patientDetails) return;
 
-  this.isEditingPersonal = true;
-}
+    this.editableDetails = {
+      email: this.patientDetails.email ?? '',
+      contact: this.patientDetails.contact ?? '',
+      address: this.patientDetails.address ?? '',
+      allergy: this.patientDetails.allergy
+        ? [...this.patientDetails.allergy]
+        : []
+    };
 
+    this.isEditingPersonal = true;
+  }
 
   cancelPersonalEdit(): void {
     this.isEditingPersonal = false;
   }
 
-savePersonalDetails(): void {
-  if (!this.patientDetails) return;
+  get isPersonalDetailsChanged(): boolean {
+  if (!this.patientDetails) return false;
 
-  const updatedPatient = {
-    ...this.patientDetails,
-    ...this.editableDetails
-  };
-
-  this.authService.updateLoggedInPatient(updatedPatient);
-  this.patientDetails = updatedPatient;
-
-  this.isEditingPersonal = false;
-  this.showSavedBanner = true;
-
-  setTimeout(() => {
-    this.showSavedBanner = false;
-  }, 2500);
+  return (
+    this.editableDetails.email !== this.patientDetails.email ||
+    this.editableDetails.contact !== this.patientDetails.contact ||
+    this.editableDetails.address !== this.patientDetails.address ||
+    JSON.stringify(this.editableDetails.allergy) !==
+      JSON.stringify(this.patientDetails.allergy)
+  );
 }
+
+  savePersonalDetails(): void {
+    if (!this.patientDetails) return;
+
+    const updatedPatient = {
+      ...this.patientDetails,
+      ...this.editableDetails
+    };
+
+    
+
+
+    this.authService.updateLoggedInPatient(updatedPatient);
+    this.patientDetails = updatedPatient;
+
+    this.isEditingPersonal = false;
+    this.showSavedBanner = true;
+
+    setTimeout(() => {
+      this.showSavedBanner = false;
+    }, 2500);
+  }
 }
