@@ -5,10 +5,11 @@ import { CommonModule } from '@angular/common';
 import { PastConsultation } from '../past-consultation/past-consultation';
 import { DoctorAvailabilitySlot } from '../doctor-availability-slot/doctor-availability-slot';
 import { AVAILABILITY } from '../../mockdata/availability.mock';
+import { APPOINTMENTS } from '../../mockdata/appointments.mock';
 import { DoctorService } from '../../services/doctor.service';
 import { PATIENTS } from '../../mockdata/patient.mock';
 
-
+import { Appointment } from '../../models/appointment.model';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -25,12 +26,12 @@ export class DoctorDashboard {
     slot = AVAILABILITY;
     flag=1;
 
+    upcomingAppointmentArray:any[]=[];
+    
 
     //docList2=DOCTORS;
     
-    
     patientList2=PATIENTS;
-
 
     doctorId=1;
 
@@ -44,11 +45,22 @@ export class DoctorDashboard {
     degree:string[]=["MBBS","MD"];
     experience:number=10;
     department:string="Cardiologist";
-    
+    selectedConsultation: number | null = null;
 
-    ngOnInit(){
-      console.log(DOCTORS)
-    }
+toggleConsultation(appointmentId: number) {
+  this.selectedConsultation =
+    this.selectedConsultation === appointmentId ? null : appointmentId;
+}
+
+
+    // moreView() {
+    //   this.selectedConsultation = !this.selectedConsultation;
+    // }   
+
+    // closeView() {
+    //  this.selectedConsultation = false;
+    // }
+
 
     viewUpcoming() {
       this.flag = 1;
@@ -61,8 +73,36 @@ export class DoctorDashboard {
     }
 
     cancelAppointment(id:number){
+      confirm("Do you want to delete Appointment?")
       this.docService.deleteAppointment(this.doctorId);
     }
+
+    ngOnInit(){
+      console.log(DOCTORS);
+      const today=new Date();
+
+      this.upcomingAppointmentArray =  APPOINTMENTS.filter((c) => {
+              const appointmentDate = new Date(c.date);
+              return appointmentDate > today  && c.doctor === this.doctorId;}
+            ).map(c => {
+                    const patient = PATIENTS.find(p => p.patientId === c.patientId);
+                    return {
+                      ...c,
+                      patientName: patient ? patient.name : 'Unknown',
+                       medicalHistory: patient? patient.medicalHistory : [] ,
+                        allergy: patient? patient.allergy : [] ,
+                    };
+      });
+
+      console.log(this.upcomingAppointmentArray)
+
+    }
+
+
+    
+
+    
+
 
 
 }

@@ -36,6 +36,8 @@ export class PastConsultation implements OnInit {
           patientName: patient ? patient.name : 'Unknown'
         };
       });
+
+      
       console.log(this.pastConsultationArray)
     console.log(`Past consultations for doctor ${this.doctorId}:`, this.pastConsultationArray);
   }

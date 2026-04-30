@@ -32,5 +32,27 @@ export const APPOINTMENTS: Appointment[] = [
     date: '2026-04-22',
     time:'2:00 PM',
     status: 'Completed'
-  }
+  },
+  {
+    appoitmentId: 130,
+    doctor: 1,
+    patientId: 1,
+    date: '2026-05-01',
+    time:'11:00 AM',
+    status: 'Scheduled'
+  },{
+    appoitmentId: 131,
+    doctor: 1,
+    patientId: 3,
+    date: '2026-04-30',
+    time:'11:00 AM',
+    status: 'Scheduled'
+  },{
+    appoitmentId: 127,
+    doctor: 1,
+    patientId: 2,
+    date: '2026-04-30',
+    time:'11:00 AM',
+    status: 'Scheduled'
+  },
 ];
