@@ -42,7 +42,7 @@ export class Modifyappointment implements OnInit {
     const appt = this.appointmentService.getById(id);
 
     if (!appt) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/patient']);
       return;
     }
 
@@ -53,7 +53,7 @@ export class Modifyappointment implements OnInit {
     this.generateTimeSlots();
   }
 
-  /* ---------- DATE OPTIONS ---------- */
+  /* ---------- DATES ---------- */
   private generateNextFiveDays(): void {
     const today = new Date();
     this.availableDates = [];
@@ -81,7 +81,7 @@ export class Modifyappointment implements OnInit {
     if (!availability) return;
 
     const slotsForDate = availability.slot.filter(
-      s => s.date === this.appointment.date
+      s => s.date.split('T')[0] === this.appointment.date
     );
 
     this.timeSlots = slotsForDate.map(s => ({
@@ -92,14 +92,16 @@ export class Modifyappointment implements OnInit {
 
   /* ---------- UPDATE ---------- */
   updateAppointment(): void {
+    if (!this.appointment) return;
+
     this.appointmentService.update(this.appointment);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/patient']);
   }
 
   /* ---------- CANCEL ---------- */
   cancelAppointment(): void {
     this.appointment.status = 'Cancelled';
     this.appointmentService.update(this.appointment);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/patient']);
   }
 }

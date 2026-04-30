@@ -282,3 +282,44 @@ textarea.ng-invalid.ng-touched {
     flex-direction: column;
   }
 }
+
+/* ───────── CARD HEADER (TOP RIGHT BACK BUTTON) ───────── */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.card-header .back-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ───────── FORM FOOTER (BOTTOM RIGHT ACTIONS) ───────── */
+.form-footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Mobile stacking */
+@media (max-width: 640px) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

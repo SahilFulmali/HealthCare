@@ -698,3 +698,116 @@ input[disabled] {
 }
 
 
+
+/* ================= SUB TABS (Upcoming / Past) ================= */
+.sub-tab-buttons {
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(216, 228, 234, 0.95);
+  box-shadow: var(--shadow-soft);
+}
+
+.sub-tab-btn {
+  min-width: 120px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+  color: #3f5667;
+  font-family: 'Manrope', sans-serif;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.sub-tab-btn:hover {
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--text);
+}
+
+.sub-tab-btn.active {
+  background: linear-gradient(135deg, #0f766e, #0f7db7);
+  color: #ffffff;
+}
+
+
+/* ================= APPOINTMENT LIST ACTIONS ================= */
+.right-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Modify button inside appointment list */
+.right-actions .ghost-btn {
+  min-height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: rgba(160, 172, 185, 0.18);
+  color: #495867;
+}
+
+
+@media (max-width: 640px) {
+  .right-actions {
+    margin-top: 8px;
+    gap: 8px;
+  }
+
+  .sub-tab-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sub-tab-btn {
+    flex: 1;
+  }
+}
+
+/* Personal details action alignment */
+.form-actions.right-align {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Disabled save button styling (consistent UX) */
+.primary-btn:disabled {
+  background: #cfd8dc;
+  color: #6b7280;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.75;
+}
+
+/* Error message styling */
+.error {
+  display: block;          /* ensures it goes to next line */
+  margin-top: 4px;         /* small gap below input */
+  font-size: 12px;
+  color: #e03131;          /* red */
+  font-weight: 600;
+  line-height: 1.4;
+}
