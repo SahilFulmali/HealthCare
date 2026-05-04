@@ -11,7 +11,6 @@ import { LoginUser } from '../login-user/login-user';
 })
 export class Home {
   constructor(private router: Router) {}
-  
   go(path: string) { this.router.navigate([path]); }
 
 }
