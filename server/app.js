@@ -1,34 +1,35 @@
 const express = require ('express'); 
-
-const app = express(); 
- 
-const logger = require('./src/middleware/logger')
-const errorhandler = require('./src/middleware/errorHandler'); 
-const registrationRoute = require ('./src/routes/registrationRoute')
-
-// logger 
-app.use(logger)
-
+const app = express();
 
 // Set the request Body 
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 
+//MIDDLEWARES
+const logger = require('./src/middleware/logger')
+const errorhandler = require('./src/middleware/errorHandler');
 
-// Res header set
-app.use((req, res, next) => {
-    res.set('my-custom-header', 'genC-2026')
-    next(); 
-})
+//ROUTES
+const authRoutes = require ('./src/routes/authRoutes');
+const registrationRoutes = require ('./src/routes/registrationRoutes');
+const patientRoutes = require ('./src/routes/patientRoutes');
+const doctorRoutes = require ('./src/routes/doctorRoutes');
 
-// Public Routes
-//app.use('/login', <login_route> )
-app.use('/registration', registrationRoute)
+//LOGGER 
+app.use(logger)
+
+//Sujay
+app.use('/login', authRoutes);
+app.use('/registration', registrationRoutes);
+
+//Devang + Sai
+app.use('/patient',patientRoutes);
+
+//Sahil
+app.use('/doctor',doctorRoutes);
 
 
-// Protected Routes  -- Authentication + authorization
-
-// Error handling 
+// Error handling
 app.use(errorhandler)
 
 module.exports = app ; 
