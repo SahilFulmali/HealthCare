@@ -10,6 +10,6 @@ router.patch('/updatePatient/:patientId',updatePatient)
 router.post('/book-appointment',bookAppointment);
 router.patch('/modify-appointment/:appointmentId',updateAppointment)
 router.get('/download-prescription/:consultationId',downloadPrescriptionData)
-router.get('/view-prescription:consultationId',viewPrescription)
+router.get('/view-prescription/:consultationId',viewPrescription)
 
 module.exports=router;
