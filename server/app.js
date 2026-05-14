@@ -17,21 +17,21 @@ const patientRoutes = require ('./src/routes/patientRoutes');
 const doctorRoutes = require ('./src/routes/doctorRoutes');
 
 //LOGGER 
-app.use(logger)
+//app.use(logger)
 
 //Sujay
-app.use('/login', authRoutes);
-app.use('/registration', registrationRoutes);
+ app.use('/login', authRoutes);
+ app.use('/registration', registrationRoutes);
 
 //Devang + Sai
 app.use('/patient',patientRoutes);
 
 //Sahil
-app.use('/doctor',doctorRoutes);
+//app.use('/doctor',doctorRoutes);
 
 
 // Error handling
-app.use(errorhandler)
+//app.use(errorhandler)
 
 module.exports = app ; 
 

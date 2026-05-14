@@ -32,7 +32,7 @@ const {
 // })
 
 
-router.post('/register', registerPatient);
+router.post('/reg', registerPatient);
 
 
 module.exports = router;

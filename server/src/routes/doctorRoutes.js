@@ -6,4 +6,5 @@ const {profileInfo} = require('../controllers/doctorController');
 // router.get('/profile',profileInfo);
 
 
+
 module.exports=router;

@@ -2,7 +2,7 @@ const mongoose=require("mongoose");
 
 const patientSchema=new mongoose.Schema({
     patientId: { 
-        type: Number, 
+        type: String, 
         unique: true 
     },
     
@@ -49,7 +49,7 @@ const patientSchema=new mongoose.Schema({
         ref: "Doctor"
     }],
 
-    consulations: [{
+    consultations: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Consultations"
     }],
