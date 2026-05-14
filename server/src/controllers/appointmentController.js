@@ -1,30 +1,25 @@
 const Appointment = require('../models/appointment');
 
+
+
+// add appointment id to doctor schema as welll
 exports.bookAppointment = async (req, res) => {
   try {
-    
     const { patientId, doctorId, date, time } = req.body;
-
-
     if (!patientId || !doctorId || !date || !time) {
         return res.status(400).json({ message: "All fields are required"});
     }
-
-
     const count = await Appointment.countDocuments();
     const appointmentId = (count + 1).toString();
-
     const appointment = await Appointment.create({ appointmentId, doctorId, patientId, date, time, status: "Scheduled" });
-
     res.status(201).json({ message: "Appointment booked successfully", appointment });
-
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 
-exports.updateAppointment = async (req, res) => {
+exports.modifyAppointment = async (req, res) => {
   try {
     const appointmentId = req.params.appointmentId;
 
