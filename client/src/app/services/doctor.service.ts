@@ -12,7 +12,7 @@ export class DoctorService {
   deleteAppointment(Appointmentid:number){
         console.log("Appointment Deleted Sucessfully !!!");
         console.log(`${Appointmentid}`);
-      }
+  }
 
   // Get all doctors
   getAllDoctors(): Doctor[] {
@@ -33,4 +33,6 @@ export class DoctorService {
   getDoctorsByExperience(minExperience: number): Doctor[] {
     return DOCTORS.filter(d => d.experience >= minExperience);
   }
+
+  
 }

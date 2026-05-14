@@ -8,7 +8,7 @@ const prescriptionSchema = new mongoose.Schema({
     dosage:{
         type: String,
         required:true,
-    },
+    }, 
     route: {
         type: String,
         enum: ["Oral", "Injection"],
