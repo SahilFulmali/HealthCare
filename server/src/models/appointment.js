@@ -2,7 +2,7 @@ const mongoose= require('mongoose');
 
 const AppointmentSchema = new mongoose.Schema({
     appointmentId:{
-        type:Number,
+        type:String,
         required:true,
         unique:true,
         index:true,
@@ -17,6 +17,10 @@ const AppointmentSchema = new mongoose.Schema({
     },
     date:{
         type:Date,
+        required:true
+    },
+    time:{                  //Devang added
+        type:String,
         required:true
     },
     status:{

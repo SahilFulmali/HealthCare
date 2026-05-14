@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const {bookAppointment} = require('../controllers/patientController')
+const { getPatientDashboard, updatePatient, downloadPrescriptionData, viewPrescription} = require('../controllers/patientController');
+const { bookAppointment, updateAppointment } = require('../controllers/appointmentController');
 
-router.get('/bookAppointment',bookAppointment);
 
+router.get('/dashboard/:patientId',getPatientDashboard)
+router.patch('/updatePatient/:patientId',updatePatient)
+router.post('/book-appointment',bookAppointment);
+router.patch('/modify-appointment/:appointmentId',updateAppointment)
+router.get('/download-prescription/:consultationId',downloadPrescriptionData)
+router.get('/view-prescription/:consultationId',viewPrescription)
 
 module.exports=router;

@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {profileInfo,getAllDoctorInfo,getDoctorById,getAllAppointments} = require('../controllers/doctorController');
 
-router.get('/profile',profileInfo);
+// router.get('/profile',profileInfo);
+
 
 router.get('/allDoctor',getAllDoctorInfo);
 
