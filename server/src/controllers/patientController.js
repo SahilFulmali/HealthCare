@@ -1,5 +1,7 @@
 const Patient = require('../models/patient')
 const Appointment = require('../models/appointment')
+const Consultations = require('../models/Consultations');
+const Doctor = require('../models/Doctor');
 
 exports.getPatientDashboard = async (req,res,next) =>{
     try{
@@ -40,3 +42,128 @@ exports.updatePatient = async (req, res) => {
   }
 };
 
+
+
+
+exports.downloadPrescriptionData = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const consultation = await Consultations.findOne({ consultationId: id });
+        if (!consultation) {
+            return res.status(404).json({ success: false, message: "Consultation not found" });
+        }
+
+        const appointment = await Appointment.findById(consultation.appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ success: false, message: "Appointment not found" });
+        }
+
+        const doctorData = await Doctor.findOne({ doctorId: appointment.doctorId });
+        const patientData = await Patient.findOne({ patientId: appointment.patientId });
+
+        
+        const exportData = {
+            consultationId: consultation.consultationId,
+            date: consultation.date,
+            patient: {
+                name: patientData ? patientData.name : 'Unknown Patient',
+                age: patientData ? patientData.age : 'N/A',
+                phone: patientData ? patientData.contactNumber : 'N/A',
+                email: patientData ? patientData.email : 'N/A',
+                gender: patientData ? patientData.gender : 'Not Specified',
+                address: patientData ? patientData.address : 'No Address Provided',
+                allergies: patientData && patientData.allergy.length > 0 
+                           ? patientData.allergy.join(', ') 
+                           : 'None recorded',
+                condition: consultation.notes
+            },
+            medications: consultation.prescriptions.map(p => ({
+                name: p.medicineName,
+                dosage: p.dosage,
+                route: p.route,
+                frequency: p.frequency
+            })),
+            physician: {
+                name: doctorData ? doctorData.name : 'Unknown Doctor',
+                department: doctorData ? doctorData.department : 'General'
+            }
+        };
+
+        const fileName = `Prescription_${id}.json`;
+        
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+  
+        return res.send(JSON.stringify(exportData, null, 2));
+
+    } catch (error) {
+        console.error("Download Error:", error);
+        res.status(500).json({ success: false, message: "Server error during download" });
+    }
+};
+
+
+exports.viewPrescription = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const consultation = await Consultations.findOne({ consultationId: id });
+        
+        if (!consultation) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "The requested prescription record does not exist." 
+            });
+        }
+
+
+        const appointment = await Appointment.findById(consultation.appointmentId);
+        
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: "Associated appointment details could not be found."
+            });
+        }
+
+        const doctorData = await Doctor.findOne({ doctorId: appointment.doctorId });
+        const patientData = await Patient.findOne({ patientId: appointment.patientId });
+
+        const responseData = {
+            consultationId: consultation.consultationId,
+            date: consultation.date,
+            patient: {
+                name: patientData ? patientData.name : 'Unknown Patient',
+                age: patientData ? patientData.age : 'N/A',
+                phone: patientData ? patientData.contactNumber : 'N/A',
+                email: patientData ? patientData.email : 'N/A',
+                gender: patientData ? patientData.gender : 'Not Specified',
+                address: patientData ? patientData.address : 'Address not on file',
+                allergies: (patientData && patientData.allergy.length > 0) 
+                           ? patientData.allergy.join(', ') 
+                           : 'None recorded',
+                condition: consultation.notes 
+            },
+          
+            medications: consultation.prescriptions.map(p => ({
+                name: p.medicineName,
+                dosage: p.dosage,
+                route: p.route,
+                frequency: p.frequency
+            })),
+            physician: {
+                name: doctorData ? doctorData.name : 'Unknown Doctor',
+                department: doctorData ? doctorData.department : 'General'
+            }
+        };
+
+        res.status(200).json(responseData);
+
+    } catch (error) {
+        console.error("View Prescription Error:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "An internal error occurred while retrieving the prescription.",
+            error: error.message 
+        });
+    }
+};
