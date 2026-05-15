@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    profileInfo,
+    getDoctor,
     getAllDoctorInfo,
     getDoctorById,
     getAllAppointments,
@@ -14,7 +14,7 @@ const {
 router.get('/allDoctor',getAllDoctorInfo);
 
 //add this in doctor Controller
-//router.get('/getDoctor',getDoctor);
+router.get('/getDoctor',getDoctor);
 
 router.get('/getDoctorById/:id',getDoctorById);
 

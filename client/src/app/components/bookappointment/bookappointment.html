@@ -40,7 +40,7 @@
             required
             #doctorId="ngModel">
             <option value="" disabled selected>Select doctor</option>
-            <option *ngFor="let d of doctors" [value]="d.id">
+            <option *ngFor="let d of doctors" [value]="d.doctorId">
               {{ d.name }} ({{ d.department }})
             </option>
           </select>

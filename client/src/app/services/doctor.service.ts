@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class DoctorService {
-  httpClient=inject(httpClient)
+  httpClient=inject(HttpClient)
 
   constructor() {}
 
@@ -17,8 +17,10 @@ export class DoctorService {
     console.log("Appointment Deleted Sucessfully !!!");
     console.log(`${Appointmentid}`);
   }
-
-  // Get the loggedIn doctors
+  getAllDoctors(){
+    return this.httpClient.get<Doctor[]>('http://localhost:5000/doctor/getAllDoctorInfo/');
+  }
+  // Get the loggedIn doctors-Sahil
   getDoctor(): Doctor {
     return this.httpClient.get<Doctor>('http://localhost:5000/doctor/getDoctor/');
   }

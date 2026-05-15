@@ -34,7 +34,7 @@ export class PastConsultationList implements OnInit {
     /** Prepare doctorId -> doctorName mapping */
     const doctors: Doctor[] = this.doctorService.getAllDoctors();
     doctors.forEach(doc => {
-      this.doctorMap.set(doc.id, doc.name);
+      this.doctorMap.set(doc.doctorId, doc.name);
     });
 
     /** Load consultations and map doctorId to doctorName */

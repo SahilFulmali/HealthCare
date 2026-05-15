@@ -1,5 +1,6 @@
 const {Doctor} = require('../models/doctor');
 const Appointment = require('../models/appointment');
+const {decodedData} = require('../utils/decodedDate');
 
 exports.getAllDoctorInfo = async(req,res,next)=>{
     try {
@@ -18,14 +19,33 @@ exports.getAllDoctorInfo = async(req,res,next)=>{
   }
 }
 
+exports.getDoctor=async(req,res,next)=>{
+    try{
+        const decoded=await decodedData(req,res);
+        console.log(decoded);
+        const doctorID= decoded.doctorId;
+        const doctorInfo= await Doctor.findOne({doctorID:doctorID});
+        
+        if(doctorInfo){
+            return res.status(200).json(doctorInfo)
+        }else {
+            return res.status(404).json({
+                message:`Doctor Not Found`
+            })
+        }
+    }catch(err){
+        next(err);
+    }
+}
+
 exports.getDoctorById = async(req,res,next)=>{
     try{
         const id= req.params.id;
         const doctorInfo= await Doctor.findOne({doctorId:id});
         if(doctorInfo){
-            return req.status(200).json(doctorInfo);
+            return res.status(200).json(doctorInfo);
         }else {
-            return req.status(404).json({
+            return res.status(404).json({
                 message: `Doctor with Id: ${id} is not in database`,
                 status: false
             })
