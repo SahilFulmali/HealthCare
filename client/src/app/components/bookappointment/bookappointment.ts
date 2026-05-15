@@ -111,7 +111,7 @@ const slotsForDate = availability.slot.filter(
     if (!patient) return;
 
     const newAppointment: Appointment = {
-      appoitmentId: Date.now(),
+      appointmentId: Date.now(),
       doctor: Number(this.appointment.doctorId),
       patientId: patient.patientId,
       date: this.appointment.date,

@@ -15,9 +15,9 @@ export class AppointmentService {
   }
 
   // READ: Get appointment by ID
-  getById(appoitmentId: number): Appointment | undefined {
+  getById(appointmentId: number): Appointment | undefined {
     return APPOINTMENTS.find(
-      a => a.appoitmentId === appoitmentId
+      a => a.appointmentId === appointmentId
     );
   }
 
@@ -39,7 +39,7 @@ export class AppointmentService {
   book(appointment: Appointment): void {
     const newAppointment: Appointment = {
       ...appointment,
-      appoitmentId: Date.now(),
+      appointmentId: Date.now(),
       status: 'Scheduled'
     };
 
@@ -49,7 +49,7 @@ export class AppointmentService {
   // UPDATE: Update appointment status/date
   update(updated: Appointment): void {
     const index = APPOINTMENTS.findIndex(
-      a => a.appoitmentId === updated.appoitmentId
+      a => a.appointmentId === updated.appointmentId
     );
 
     if (index !== -1) {
@@ -58,9 +58,9 @@ export class AppointmentService {
   }
 
   // DELETE: Cancel appointment
-  cancel(appoitmentId: number): void {
+  cancel(appointmentId: number): void {
     const index = APPOINTMENTS.findIndex(
-      a => a.appoitmentId === appoitmentId
+      a => a.appointmentId === appointmentId
     );
 
     if (index !== -1) {

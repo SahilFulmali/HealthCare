@@ -1,5 +1,9 @@
 import {inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+
 import { Doctor } from '../models/doctor.model';
+import { Appointment } from '../models/appointment.model';
 
 
 import { DOCTORS } from '../mockdata/doctors.mock';
@@ -7,27 +11,28 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
-})
+});
+
+
 export class DoctorService {
   httpClient=inject(HttpClient)
 
   constructor() {}
 
-  deleteAppointment(Appointmentid:number){
-    console.log("Appointment Deleted Sucessfully !!!");
-    console.log(`${Appointmentid}`);
+  deleteAppointment(appointmentId: string): Observable<any> {
+    return this.httpClient.delete<any>(`http://localhost:5000/doctor/deleteAppointment/${appointmentId}`);
   }
+
   getAllDoctors(){
     return this.httpClient.get<Doctor[]>('http://localhost:5000/doctor/getAllDoctorInfo/');
   }
   // Get the loggedIn doctors-Sahil
-  getDoctor(): Doctor {
-    return this.httpClient.get<Doctor>('http://localhost:5000/doctor/getDoctor/');
+  getDoctor(): Observable<Doctor> {
+    return this.httpClient.get<Doctor>(`http://localhost:5000/doctor/getDoctor`);
   }
 
-  // Get doctor by ID
-  getDoctorById(id: number): Doctor | undefined {
-    return this.httpClient.get<Doctor>('http://localhost:5000/doctor/getDoctorById/:id');
+  getDoctorById(id: number): Observable<Doctor> {
+    return this.httpClient.get<Doctor>(`http://localhost:5000/doctor/getDoctorById/${id}`);
   }
 
   // Get doctors by department
@@ -40,5 +45,11 @@ export class DoctorService {
     return DOCTORS.filter(d => d.experience >= minExperience);
   }
 
+  getUpcomingAppointments(): Observable<Appointment[]>{
+    return this.httpClient.get<Appointment[]>('http://localhost:5000/doctor/upcomingAppointments')
+  }
   
+  getPastAppointments(): Observable<Appointment[]>{
+    return this.httpClient.get<Appointment[]>('http://localhost:5000/doctor/pastAppointments')
+  }
 }

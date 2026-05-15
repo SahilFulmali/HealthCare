@@ -2,6 +2,7 @@ const {Doctor} = require('../models/doctor');
 const Appointment = require('../models/appointment');
 const {decodedData} = require('../utils/decodedDate');
 
+
 exports.getAllDoctorInfo = async(req,res,next)=>{
     try {
         const allDoctor = await Doctor.find({});
@@ -117,16 +118,13 @@ exports.getUpcomingAppointments = async(req,res,next)=>{
                 }
             ],
             status:"Scheduled"
-        }).sort({
+        }).populate("patient", "name patientId medicalHistory allergy")
+        .sort({
             date:1,
             time:1
         })
 
-        return res.status(200).json({
-            success: true,
-            count: upcomingAppointments.length,
-            data: upcomingAppointments
-        });
+        return res.status(200).json(upcomingAppointments);
 
     }catch(err){
         next(err)
@@ -152,7 +150,8 @@ exports.getPastAppointments = async(req,res,next)=>{
                 }
             ],
             status:"Completed"
-        }).sort({
+        }).populate("patient", "name patientId medicalHistory allergy")
+        .sort({
             date:-1,
             time:-1
         })

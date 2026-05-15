@@ -1,60 +1,74 @@
+<div class="outer-container bg-light p-4" style="min-height: 100vh;">
 
-
-    <div class="outer-container bg-light p-4" style="min-height: 100vh;">
-        <div class="inner-container bg-white rounded-4 shadow-sm p-3 mb-4 d-flex justify-content-between align-items-center border border-2" style="border-color: #8b5cf6;">
-            <div>
-                <img [src]="url" alt="Profile Pic" id="profile_img" style="width: 80px; height: 80px; object-fit: cover;">
-            </div>
-            <div class="flex-grow-1 ms-4 mt-2">
-                <h4 class="mb-0 fs-5 text-dark fw-normal">{{Name}} {{degree}}</h4>
-                <br class="d-none">
-                <h5 class="mb-0 mt-2 fs-6 text-dark fw-normal">{{department}}</h5>
-            </div>
-            <div>
-                <p class="mb-0 me-3 fw-medium">Exp: {{experience}} yrs+</p>
-            </div>
-        </div>
-        
-        <div class="d-flex gap-3 mb-4">
-            <button (click)="viewPast()" class=" button btn btn-success  text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium" >
-                Past Consultations
-            </button>
-            <button (click)="viewUpcoming()" class=" button btn btn-success  text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium" >
-                Upcoming Appointments
-            </button>
-                <button (click)="editAvailability()" class=" button btn btn-success  text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">Edit Availability</button>
-        </div>
-        
-        <div class="bg-white rounded-4 shadow-sm p-4" style="min-height: 350px;">
-            @if(flag === 1){
-                <h4>Upcoming Appointments</h4>
-                <div *ngFor="let val of upcomingAppointmentArray" class="border-bottom pb-2 mb-3 d-flex ">
-                    <div>
-                        <div>
-                        <p class="mb-1 fw-bold text-dark">Patient Name: {{val.patientName}}</p>
-                        <p class="mb-1 text-secondary small">Patient ID: {{val.patientId}}</p>
-                        <p class="mb-1 text-secondary small">Date: {{val.date}}</p>
-                        <p class="mb-1 text-secondary small">Date: {{val.time}}</p>
-
-                         <button class="button" (click)="toggleConsultation(val.appoitmentId)">
-                            {{ selectedConsultation === val.appoitmentId ? 'View Less' : 'View More' }}
-                        </button>
-                        
-                            <div *ngIf="selectedConsultation === val.appoitmentId" class="expanded-details mt-2">
-                                <p class="mb-1 text-secondary small">Medical History: {{val.medicalHistory}}</p>
-                                <p class="mb-1 text-secondary small">Allergy History: {{val.allergy}}</p>
-                            </div>
-                        </div>
-                    </div>  
-                    <!-- //added not null assertion here in patient id-->
-                    <button class="cancel-btn" (click)="cancelAppointment(val.patientId!)">Cancel Appointment</button>
-                </div>  
-
-            }@else if(flag === 2){
-                <h5>Past Consultations</h5>
-                <app-past-consultation></app-past-consultation>
-            }@else if(flag === 3){
-                <app-doctor-availability-slot></app-doctor-availability-slot>
-            }
-        </div>
+  <div
+    class="inner-container bg-white rounded-4 shadow-sm p-3 mb-4 d-flex justify-content-between align-items-center border border-2"
+    style="border-color: #8b5cf6;"
+    *ngIf="DoctorInfo$ | async as doctor"
+  >
+    <div>
+      <img
+        [src]="doctor.profilePic"
+        alt="Profile Pic"
+        id="profile_img"
+        style="width: 80px; height: 80px; object-fit: cover;"
+      />
     </div>
+    <div class="flex-grow-1 ms-4 mt-2">
+      <h4 class="mb-0 fs-5 text-dark fw-normal">
+        {{ doctor.name }} ({{ doctor.degree.join(', ') }})
+      </h4>
+      <h5 class="mb-0 mt-2 fs-6 text-dark fw-normal">
+        {{ doctor.department }}
+      </h5>
+    </div>
+    <div>
+      <p class="mb-0 me-3 fw-medium">Exp: {{ doctor.experience }} yrs+</p>
+    </div>
+  </div>
+
+  <div class="d-flex gap-3 mb-4">
+
+    <button (click)="viewPast()" class="button btn btn-success text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+      Past Consultations
+    </button>
+    <button (click)="viewUpcoming()" class="button btn btn-success text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+      Upcoming Appointments
+    </button>
+    <button (click)="editAvailability()" class="button btn btn-success text-white border-0 rounded-pill px-4 py-2 shadow-sm fw-medium">
+      Edit Availability
+    </button>
+
+  </div>
+
+  <div class="bg-white rounded-4 shadow-sm p-4" style="min-height: 350px;">
+    @if(flag === 1){
+      <h4>Upcoming Appointments</h4>
+      <div *ngFor="let val of (upcomingAppointments$ | async)" class="border-bottom pb-2 mb-3 d-flex">
+        <div>
+            
+          <p class="mb-1 fw-bold text-dark">Patient Name: {{val.patient.name}}</p>
+          <p class="mb-1 text-secondary small">Patient ID: {{val.patient.patientId}}</p>
+          <p class="mb-1 text-secondary small">Date: {{val.date}}</p>
+          <p class="mb-1 text-secondary small">Time: {{val.time}}</p>
+
+          <button class="button" (click)="toggleConsultation(val.appointmentId)">
+            {{ selectedConsultation === val.appointmentId ? 'View Less' : 'View More' }}
+          </button>
+
+          <div *ngIf="selectedConsultation === val.appointmentId" class="expanded-details mt-2">
+            <p class="mb-1 text-secondary small">Medical History: {{val.patient.medicalHistory}}</p>
+            <p class="mb-1 text-secondary small">Allergy History: {{val.patient.allergy}}</p>
+          </div>
+
+        </div>
+        <button class="cancel-btn" (click)="cancelAppointment(val.appointmentId)">Cancel Appointment</button>
+      </div>
+
+    }@else if(flag === 2){
+      <h5>Past Consultations</h5>
+      <app-past-consultation></app-past-consultation>
+    }@else if(flag === 3){
+      <app-doctor-availability-slot></app-doctor-availability-slot>
+    }
+  </div>
+</div>

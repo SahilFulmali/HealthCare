@@ -5,6 +5,7 @@ const {
     getDoctor,
     getAllDoctorInfo,
     getDoctorById,
+    deleteAppointment,
     getAllAppointments,
     getUpcomingAppointments} = require('../controllers/doctorController');
 
@@ -14,6 +15,9 @@ const {
 router.get('/allDoctor',getAllDoctorInfo);
 
 //add this in doctor Controller
+
+router.delete('/deleteAppointment/:appointmentId',deleteAppointment);
+
 router.get('/getDoctor',getDoctor);
 
 router.get('/getDoctorById/:id',getDoctorById);
