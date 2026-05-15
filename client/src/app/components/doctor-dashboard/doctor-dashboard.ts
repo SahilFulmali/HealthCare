@@ -23,35 +23,53 @@ export class DoctorDashboard {
     //Services
     docService=inject(DoctorService);
     
+
+    DoctorInfo:string=this.viewDoctorInfo();
+
+    viewDoctorInfo():string{
+     return "sahil";
+    }
     slot = AVAILABILITY;
-    flag=1;
+    flag=2;
 
     upcomingAppointmentArray:any[]=[];
-    
-
-    //docList2=DOCTORS;
-    
-    patientList2=PATIENTS;
-
+   
     doctorId=1;
-
-    patientList=this.patientList2.filter(e=>e.doctorAssigned.find(x=> x=== this.doctorId));
-
-    
-
-
     url:string="https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*";
     Name:string="Sahil Fulmali";
     degree:string[]=["MBBS","MD"];
     experience:number=10;
     department:string="Cardiologist";
+
     selectedConsultation: number | null = null;
 
-toggleConsultation(appointmentId: number) {
-  this.selectedConsultation =
-    this.selectedConsultation === appointmentId ? null : appointmentId;
-}
+    ngOnInit(){
 
+      const today=new Date();
+      
+
+      this.upcomingAppointmentArray = APPOINTMENTS.filter((c) => {
+              const appointmentDate = new Date(c.date);
+              return appointmentDate > today  && c.doctor === this.doctorId;}
+            ).map(c => {
+                    const patient = PATIENTS.find(p => p.patientId === c.patientId);
+                    return {
+                      ...c,
+                      patientName: patient ? patient.name : 'Unknown',
+                       medicalHistory: patient? patient.medicalHistory : [] ,
+                        allergy: patient? patient.allergy : [] ,
+                    };
+      });
+
+      console.log(this.upcomingAppointmentArray)
+
+    }
+
+  
+  toggleConsultation(appointmentId: number) {
+    this.selectedConsultation =
+    this.selectedConsultation === appointmentId ? null : appointmentId;
+  }
 
     // moreView() {
     //   this.selectedConsultation = !this.selectedConsultation;
@@ -76,33 +94,5 @@ toggleConsultation(appointmentId: number) {
       confirm("Do you want to delete Appointment?")
       this.docService.deleteAppointment(this.doctorId);
     }
-
-    ngOnInit(){
-      console.log(DOCTORS);
-      const today=new Date();
-
-      this.upcomingAppointmentArray =  APPOINTMENTS.filter((c) => {
-              const appointmentDate = new Date(c.date);
-              return appointmentDate > today  && c.doctor === this.doctorId;}
-            ).map(c => {
-                    const patient = PATIENTS.find(p => p.patientId === c.patientId);
-                    return {
-                      ...c,
-                      patientName: patient ? patient.name : 'Unknown',
-                       medicalHistory: patient? patient.medicalHistory : [] ,
-                        allergy: patient? patient.allergy : [] ,
-                    };
-      });
-
-      console.log(this.upcomingAppointmentArray)
-
-    }
-
-
-    
-
-    
-
-
 
 }

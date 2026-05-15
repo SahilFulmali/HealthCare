@@ -27,7 +27,7 @@ const doctorRoutes = require ('./src/routes/doctorRoutes');
 app.use('/patient',patientRoutes);
 
 //Sahil
-//app.use('/doctor',doctorRoutes);
+app.use('/doctor',doctorRoutes);
 
 
 // Error handling

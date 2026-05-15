@@ -72,3 +72,4 @@ exports.updateAppointment = async (req, res) => {
     });
   }
 };
+

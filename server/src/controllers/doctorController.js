@@ -80,3 +80,70 @@ exports.getAllAppointments = async(req,res,next)=>{
     }
 }
 
+
+exports.getUpcomingAppointments = async(req,res,next)=>{
+    try{
+        const nowDate= new Date();
+
+        const upcomingAppointments = await Appointment.find({
+            $or:[
+                {date:{$gt:nowDate}},
+                {
+                    date:{
+                        $gte: new Date(nowDate.setHours(0,0,0,0)),
+                        $lt: new Date(nowDate.setHours(23,59,59,999))
+                    },
+                    time: { $gt: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }
+                }
+            ],
+            status:"Scheduled"
+        }).sort({
+            date:1,
+            time:1
+        })
+
+        return res.status(200).json({
+            success: true,
+            count: upcomingAppointments.length,
+            data: upcomingAppointments
+        });
+
+    }catch(err){
+        next(err)
+    }
+}
+
+exports.getPastAppointments = async(req,res,next)=>{
+    try{
+        const now= new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const currentTimeString = now.toLocaleTimeString('en-GB', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
+        const pastAppointments = await Appointment.find({
+            $or:[
+                { date: { $lt: startOfToday } },
+                {
+                    date: startOfToday, 
+                    time: { $lt: currentTimeString }
+                }
+            ],
+            status:"Completed"
+        }).sort({
+            date:-1,
+            time:-1
+        })
+
+        return res.status(200).json({
+            success: true,
+            count: pastAppointments.length,
+            data: pastAppointments
+        });
+
+    }catch(err){
+        next(err)
+    }
+}
