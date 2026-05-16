@@ -1,7 +1,7 @@
 const Patient = require('../models/patient')
 const Appointment = require('../models/appointment')
 const Consultations = require('../models/Consultations');
-const Doctor = require('../models/Doctor');
+const Doctor = require('../models/doctor');
 
 exports.getPatientDashboard = async (req,res,next) =>{
     try{
@@ -14,17 +14,15 @@ exports.getPatientDashboard = async (req,res,next) =>{
 
         const appointments = await Appointment.find({patientId:patientId});
 
-        res.status(200).json({message:'Patient Dashbaord Fetched Successfully',patientList,appointments});
+        res.status(200).json({message:'Patient Dashboard Fetched Successfully',patientList,appointments});
     }catch(err){
         next(err);
     }
 }
 
-
 exports.updatePatient = async (req, res) => {
   try {
     const patientId=String(req.params.patientId)
-    //const patientId = req.user.id;
 
     const updates = {};
 
@@ -42,18 +40,17 @@ exports.updatePatient = async (req, res) => {
   }
 };
 
-
-
-
 exports.downloadPrescriptionData = async (req, res) => {
     try {
-        const { id } = req.params;
+        // ✅ FIX: Parameter matching router custom key name string
+        const id = req.params.consultationId || req.params.id;
         const consultation = await Consultations.findOne({ consultationId: id });
         if (!consultation) {
             return res.status(404).json({ success: false, message: "Consultation not found" });
         }
 
-        const appointment = await Appointment.findById(consultation.appointmentId);
+        // ✅ FIX: fallback handling strictly using application reference string mapping
+        const appointment = await Appointment.findOne({ appointmentId: consultation.appointmentId }) || await Appointment.findById(consultation.appointmentId);
         if (!appointment) {
             return res.status(404).json({ success: false, message: "Appointment not found" });
         }
@@ -61,7 +58,6 @@ exports.downloadPrescriptionData = async (req, res) => {
         const doctorData = await Doctor.findOne({ doctorId: appointment.doctorId });
         const patientData = await Patient.findOne({ patientId: appointment.patientId });
 
-        
         const exportData = {
             consultationId: consultation.consultationId,
             date: consultation.date,
@@ -102,10 +98,10 @@ exports.downloadPrescriptionData = async (req, res) => {
     }
 };
 
-
 exports.viewPrescription = async (req, res) => {
     try {
-        const { id } = req.params;
+        // ✅ FIX: Named property context binding fixed matching path routing configs
+        const id = req.params.consultationId || req.params.id;
         const consultation = await Consultations.findOne({ consultationId: id });
         
         if (!consultation) {
@@ -115,8 +111,8 @@ exports.viewPrescription = async (req, res) => {
             });
         }
 
-
-        const appointment = await Appointment.findById(consultation.appointmentId);
+        // ✅ FIX: Modified dynamic check string format mapping target mapping reference keys
+        const appointment = await Appointment.findOne({ appointmentId: consultation.appointmentId }) || await Appointment.findById(consultation.appointmentId);
         
         if (!appointment) {
             return res.status(404).json({

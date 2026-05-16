@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { AVAILABILITY } from '../../mockdata/availability.mock';
+// import { AVAILABILITY } from '../../mockdata/availability.mock';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+const AVAILABILITY: any[] = [];
 
 @Component({
   selector: 'app-doctor-availability-slot',

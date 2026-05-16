@@ -2,7 +2,7 @@ import { Appointment } from '../models/appointment.model';
 
 export const APPOINTMENTS: Appointment[] = [
   {
-    appoitmentId: 124,
+    appointmentId: 124,
     doctor: 2,
     patientId: 1,
     date: '2026-04-25',
@@ -11,7 +11,7 @@ export const APPOINTMENTS: Appointment[] = [
   },
   
   {
-    appoitmentId: 125,
+    appointmentId: 125,
     doctor: 1,
     patientId: 1,
     date: '2026-04-26',
@@ -19,7 +19,7 @@ export const APPOINTMENTS: Appointment[] = [
     status: 'Completed'
   },
   {
-    appoitmentId: 126,
+    appointmentId: 126,
     doctor: 2,
     patientId: 3,
     date: '2026-04-26',
@@ -27,7 +27,7 @@ export const APPOINTMENTS: Appointment[] = [
     status: 'Scheduled'
   },
   {
-    appoitmentId: 127,
+    appointmentId: 127,
     doctor: 3,
     patientId: 1,
     date: '2026-04-22',
@@ -35,21 +35,21 @@ export const APPOINTMENTS: Appointment[] = [
     status: 'Completed'
   },
   {
-    appoitmentId: 130,
+    appointmentId: 130,
     doctor: 1,
     patientId: 1,
     date: '2026-05-01',
     time:'11:00 AM',
     status: 'Scheduled'
   },{
-    appoitmentId: 131,
+    appointmentId: 131,
     doctor: 1,
     patientId: 3,
     date: '2026-04-30',
     time:'11:00 AM',
     status: 'Scheduled'
   },{
-    appoitmentId: 127,
+    appointmentId: 127,
     doctor: 1,
     patientId: 2,
     date: '2026-04-30',

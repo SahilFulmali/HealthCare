@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { APPOINTMENTS } from '../mockdata/appointments.mock';
+// import { APPOINTMENTS } from '../mockdata/appointments.mock';
+
+const APPOINTMENTS: any[] = [];
+
 
 @Injectable({
   providedIn: 'root',

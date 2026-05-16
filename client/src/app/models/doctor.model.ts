@@ -1,9 +1,10 @@
 export interface Doctor {
-  id: number;
+  doctorId: string;
   name: string;
   experience: number;
   department: string;
-  url: string;
+  contactNumber: string;
+  profilePic: string;
   degree: string[];
-  appointments: number[];
+  appointments: string[];
 }

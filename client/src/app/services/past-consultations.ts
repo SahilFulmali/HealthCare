@@ -1,82 +1,31 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-
-import { CONSULTATIONS } from '../mockdata/consultations.mock';
-import { DoctorService } from './doctor.service';
-import { Doctor } from '../models/doctor.model';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http'; // ✅ HttpClient import kiya
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PastConsultations {
+  // ✅ http aur baseUrl ko class properties ke roop mein inject aur declare kiya
+  private http = inject(HttpClient);
+  private baseUrl = 'http://localhost:5000/patient';
 
-  constructor(private doctorService: DoctorService) {}
+  constructor() {}
 
-
-  listAll(): Observable<any[]> {
-
-    const doctors: Doctor[] = this.doctorService.getAllDoctors();
-    const allRecords: any[] = [];
-
-    CONSULTATIONS.forEach(patientGroup => {
-      patientGroup.consultations.forEach(c => {
-
-        const doctor = doctors.find(d => d.id === c.doctorId);
-
-        allRecords.push({
-          consultationId: c.consultationID,
-          appointmentId: c.appointmentId,
-          patientName: `Patient ${patientGroup.patientID}`,
-          doctorId: c.doctorId,
-          doctorName: doctor ? doctor.name : 'Unknown Doctor',
-          date: c.date,                      
-          prescription: c.prescriptions,
-          notes: c.notes
-        });
-
-      });
-    });
-
-    return of(allRecords);
+  // 1. All records load karne ke liye dashboard dynamic data endpoint ka use karenge
+  listAll(patientId: string = '1'): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/dashboard/${patientId}`);
   }
 
-  /* 2. SINGLE PRESCRIPTION FOR PDF VIEW- */
+  // 2. SINGLE PRESCRIPTION VIEW FOR MODAL / DISPLAY
   getPrescriptionById(consultationId: string | number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/view-prescription/${consultationId}`);
+  }
 
-    const doctors: Doctor[] = this.doctorService.getAllDoctors();
-
-    for (const patientGroup of CONSULTATIONS) {
-      const found = patientGroup.consultations.find(
-        c => String(c.consultationID) === String(consultationId)
-      );
-
-      if (found) {
-        const doctor = doctors.find(d => d.id === found.doctorId);
-
-        const formattedRecord = {
-          consultationId: found.consultationID,
-          date: found.date,
-          patient: {
-            name: `Patient ${patientGroup.patientID}`,
-            age: 30,
-            phone: '(123) 456-7890',
-            email: `patient${patientGroup.patientID}@example.com`,
-            gender: 'Not Specified',
-            address: '123 Health Street\nChennai, TN',
-            allergies: 'None recorded',
-            condition: found.notes
-          },
-          medications: found.prescriptions,
-          physician: {
-            name: doctor ? doctor.name : 'Unknown Doctor'
-          }
-        };
-
-        return of(formattedRecord);
-      }
-    }
-
-    console.warn(`Prescription with ID ${consultationId} not found.`);
-    return of(null);
+  // 3. DOWNLOAD PRESCRIPTION AS JSON 
+  downloadPrescriptionFile(consultationId: string | number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/download-prescription/${consultationId}`, {
+      responseType: 'blob'
+    });
   }
 }

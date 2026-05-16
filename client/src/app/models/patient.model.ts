@@ -6,7 +6,7 @@ export interface Patient {
   bloodGroup: string;
   email: string;
   password: string;
-  contact: string;
+  contactNumber: string;
   address: string;
   medicalHistory: string[];
   allergy: string[];

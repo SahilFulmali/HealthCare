@@ -1,8 +1,16 @@
+export interface PatientSummary {
+  _id: string;
+  patientId:Number,          
+  name: string;
+  medicalHistory: string[];
+  allergy: string[];
+}
+
 export interface Appointment {
-  appoitmentId: number; 
-  doctor: number;
-  patientId: number;
-  date: string;
-  time: string;
-  status: string;
+  appointmentId: string;
+  doctorId: string;
+  patient: PatientSummary;  
+  date: string;   
+  time: string; 
+  status: "Completed" | "Scheduled";
 }

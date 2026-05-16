@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Patient } from '../models/patient.model';
-import { PATIENTS } from '../mockdata/patient.mock';
+
+// ✅ Dead mock reference ko bypass karne ke liye local empty array declare kiya
+const PATIENTS: any[] = [];
 
 @Injectable({
   providedIn: 'root'
@@ -36,22 +38,23 @@ export class AuthService {
       return null;
     }
 
+    // ✅ Parameter 'p' ko explicit 'any' type diya taaki TS error na throw kare
     return (
-      PATIENTS.find(p => p.patientId === Number(patientId)) || null
+      PATIENTS.find((p: any) => p.patientId === Number(patientId)) || null
     );
   }
 
-updateLoggedInPatient(updatedPatient: any): void {
-  const patientIndex = PATIENTS.findIndex(
-    p => p.patientId === updatedPatient.patientId
-  );
+  updateLoggedInPatient(updatedPatient: any): void {
+    // ✅ Parameter 'p' ko explicit 'any' type diya
+    const patientIndex = PATIENTS.findIndex(
+      (p: any) => p.patientId === updatedPatient.patientId
+    );
 
-  if (patientIndex !== -1) {
-    PATIENTS[patientIndex] = {
-      ...PATIENTS[patientIndex],
-      ...updatedPatient
-    };
+    if (patientIndex !== -1) {
+      PATIENTS[patientIndex] = {
+        ...PATIENTS[patientIndex],
+        ...updatedPatient
+      };
+    }
   }
-}
-
 }

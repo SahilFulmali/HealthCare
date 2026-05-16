@@ -2,26 +2,21 @@
 
   <section class="content-card">
 
-   
- <!-- HEADER -->
-  <div class="card-header">
-    <h2>Book New Appointment</h2>
+    <div class="card-header">
+      <h2>Book New Appointment</h2>
+      <a routerLink="/patient" class="ghost-btn back-btn">
+        Back to Dashboard
+      </a>
+    </div>
 
-    <a routerLink="/patient" class="ghost-btn back-btn">
-      Back to Dashboard
-    </a>
-  </div>
+    <p class="muted">
+      Fill in the details below to schedule your consultation.
+    </p>
 
-  <p class="muted">
-    Fill in the details below to schedule your consultation.
-  </p>
-
-    <!-- SUCCESS MESSAGE -->
     <div *ngIf="booked" class="saved-banner">
       ✅ Appointment booked successfully!
     </div>
 
-    <!-- FORM -->
     <form
       #apptForm="ngForm"
       novalidate
@@ -30,17 +25,15 @@
 
       <div class="form-grid">
 
-        <!-- Doctor -->
         <label>
           <span>Doctor</span>
           <select
             name="doctorId"
             [(ngModel)]="appointment.doctorId"
-            (change)="onDateChange()"
-            required
+            (change)="generateTimeSlots()" required
             #doctorId="ngModel">
             <option value="" disabled selected>Select doctor</option>
-            <option *ngFor="let d of doctors" [value]="d.id">
+            <option *ngFor="let d of doctors" [value]="d.doctorId">
               {{ d.name }} ({{ d.department }})
             </option>
           </select>
@@ -50,19 +43,16 @@
           </small>
         </label>
 
-        <!-- Date -->
         <label>
           <span>Date</span>
           <select
             name="date"
             [(ngModel)]="appointment.date"
-            (change)="onDateChange()"
-            required
+            (change)="onDateChange()" required
             #date="ngModel">
             <option value="" disabled selected>Select date</option>
             <option *ngFor="let d of availableDates" [value]="d">
-              {{ d }}
-            </option>
+              {{ d | date:'mediumDate' }} </option>
           </select>
 
           <small class="error" *ngIf="date.invalid && date.touched">
@@ -70,15 +60,16 @@
           </small>
         </label>
 
-        <!-- Time -->
         <label>
           <span>Time</span>
           <select
             name="time"
             [(ngModel)]="appointment.time"
             required
-            #time="ngModel">
-            <option value="" disabled selected>Select time</option>
+            [disabled]="timeSlots.length === 0" #time="ngModel">
+            <option value="" disabled selected>
+              {{ timeSlots.length === 0 ? 'No slots available' : 'Select time' }}
+            </option>
             <option
               *ngFor="let slot of timeSlots"
               [value]="slot.time"
@@ -92,7 +83,6 @@
           </small>
         </label>
 
-        <!-- Mode -->
         <label>
           <span>Consultation Type</span>
           <select
@@ -110,7 +100,6 @@
           </small>
         </label>
 
-        <!-- Reason -->
         <label class="wide">
           <span>Reason for Visit</span>
           <textarea
@@ -123,19 +112,17 @@
           </textarea>
 
           <small *ngIf="reason.invalid && reason.touched">
-          <span class="error" *ngIf="reason.errors?.['required']">
-            Reason is required
-          </span>
-
-          <span class="error" *ngIf="reason.errors?.['minlength']">
-            Minimum 5 characters required
-          </span>
+            <span class="error" *ngIf="reason.errors?.['required']">
+              Reason is required
+            </span>
+            <span class="error" *ngIf="reason.errors?.['minlength']">
+              Minimum 5 characters required
+            </span>
           </small>
         </label>
 
       </div>
 
-      <!-- ACTIONS -->
       <div class="form-actions">
         <button
           type="submit"
@@ -145,8 +132,7 @@
         </button>
 
         <button
-          type="reset"
-          class="ghost-btn sm"
+          type="button" class="ghost-btn sm"
           (click)="apptForm.resetForm()">
           Clear
         </button>

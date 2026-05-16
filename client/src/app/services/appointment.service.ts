@@ -1,70 +1,50 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Appointment } from '../models/appointment.model';
-import { APPOINTMENTS } from '../mockdata/appointments.mock';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
+  
+  private http = inject(HttpClient);
+  private baseUrl = 'http://localhost:5000/patient'; 
 
   constructor() {}
 
-  // READ: Get all appointments
-  getAll(): Appointment[] {
-    return [...APPOINTMENTS];
+  // 1. READ: Saari appointments database se lana
+  getAll(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/getAll`);
   }
 
-  // READ: Get appointment by ID
-  getById(appoitmentId: number): Appointment | undefined {
-    return APPOINTMENTS.find(
-      a => a.appoitmentId === appoitmentId
-    );
+  // 2. READ: ID se single appointment dhoodhna
+  getById(appointmentId: string): Observable<Appointment> {
+    return this.http.get<Appointment>(`${this.baseUrl}/getById/${appointmentId}`);
   }
 
-  // READ: Get appointments for a patient
-  getByPatientId(patientId: number): Appointment[] {
-    return APPOINTMENTS.filter(
-      a => a.patientId === patientId
-    );
+  // 3. READ: Kisi specific Patient ki saari appointments lana
+  getByPatientId(patientId: string | number): Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(`${this.baseUrl}/patient/${patientId}`);
   }
 
-  // READ: Get appointments for a doctor
-  getByDoctorId(doctorId: number): Appointment[] {
-    return APPOINTMENTS.filter(
-      a => a.doctor === doctorId
-    );
+  // 4. READ: Kisi specific Doctor ki saari appointments lana
+  getByDoctorId(doctorId: string | number): Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(`${this.baseUrl}/doctor/${doctorId}`);
   }
 
-  // CREATE: Book new appointment (dummy)
-  book(appointment: Appointment): void {
-    const newAppointment: Appointment = {
-      ...appointment,
-      appoitmentId: Date.now(),
-      status: 'Scheduled'
-    };
-
-    APPOINTMENTS.push(newAppointment);
+  // 5. CREATE: Nayi appointment book karna (Jo abhi humne controller banaya)
+  book(appointmentData: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/book-appointment`, appointmentData);
   }
 
-  // UPDATE: Update appointment status/date
-  update(updated: Appointment): void {
-    const index = APPOINTMENTS.findIndex(
-      a => a.appoitmentId === updated.appoitmentId
-    );
-
-    if (index !== -1) {
-      APPOINTMENTS[index] = updated;
-    }
+  // 6. UPDATE: Appointment modify karna (Aapke modifyAppointment controller ke liye)
+  update(appointmentId: string, updatedData: any): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/modify-appointment/${appointmentId}`, updatedData);
   }
 
-  // DELETE: Cancel appointment
-  cancel(appoitmentId: number): void {
-    const index = APPOINTMENTS.findIndex(
-      a => a.appoitmentId === appoitmentId
-    );
-
-    if (index !== -1) {
-      APPOINTMENTS.splice(index, 1);
-    }
+  // 7. DELETE / CANCEL: Appointment cancel karna
+  cancel(appointmentId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/cancel/${appointmentId}`);
   }
 }
