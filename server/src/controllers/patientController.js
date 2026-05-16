@@ -12,7 +12,7 @@ exports.getPatientDashboard = async (req,res,next) =>{
             return res.status(404).json({message : 'Patient not Found'});
         }
 
-        const appointments = await Appointment.find({patientId:patientId});
+        const appointments = await Appointment.find({patient:patientId});
 
         res.status(200).json({message:'Patient Dashboard Fetched Successfully',patientList,appointments});
     }catch(err){

@@ -1,6 +1,6 @@
 export interface PatientSummary {
   _id: string;
-  patientId:Number,          
+  patientId:number,          
   name: string;
   medicalHistory: string[];
   allergy: string[];
@@ -13,4 +13,6 @@ export interface Appointment {
   date: string;   
   time: string; 
   status: "Completed" | "Scheduled";
+  mode: "In-person" | "Online" | string; 
+  reason: string;
 }

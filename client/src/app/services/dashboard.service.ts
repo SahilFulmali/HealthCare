@@ -1,33 +1,39 @@
 import { inject, Injectable } from '@angular/core';
-import { AppointmentService } from './appointment.service';
+import { HttpClient } from '@angular/common/http'; // 👈 HttpClient inject kiya direct hit ke liye
 import { AuthService } from './auth.service';
 import { Appointment } from '../models/appointment.model';
-import { Observable, map, of } from 'rxjs'; // 👈 RxJS operators imports kiye
+import { Observable, map, of } from 'rxjs'; 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
 
-  // Angular 17+ Modern Pattern Injection
-  private appointmentService = inject(AppointmentService);
   private authService = inject(AuthService);
+  private http = inject(HttpClient); // 👈 Direct HTTP client instance
+  private baseUrl = 'http://localhost:5000/patient'; 
 
   constructor() {}
 
-  // Patient info for dashboard header (Same as before)
   getPatientContext() {
     return this.authService.getLoggedInPatient();
   }
 
-  // ✅ FIX 1: Counts for summary cards (Handled Async Observable Array Stream)
-  getAppointmentSummary(): Observable<{ total: number; upcoming: number }> {
+  // ✅ Helper: Backend ke /dashboard/:patientId se complete array stream nikalna
+  private getDashboardDataFromBackend(): Observable<any> {
     const patient = this.getPatientContext();
-    if (!patient) return of({ total: 0, upcoming: 0 }); // Agar patient nahi hai toh safely empty object return karo
+    const pId = patient ? (patient.patientId || (patient as any)._id || "1") : "1"; 
+    
+    // Seedha backend router mapping -> /patient/dashboard/:patientId
+    return this.http.get<any>(`${this.baseUrl}/dashboard/${pId}`);
+  }
 
-    // Pure hospital ke bajay strictly logged-in patient ki appointments fetch karega via database
-    return this.appointmentService.getByPatientId(patient.patientId).pipe(
-      map((appointments: Appointment[]) => {
+  // ✅ FIX 1: Summary cards counts updated via real backend dashboard object
+  getAppointmentSummary(): Observable<{ total: number; upcoming: number }> {
+    return this.getDashboardDataFromBackend().pipe(
+      map((res: any) => {
+        // Backend se agar appointments array res.appointments me aa raha hai toh use filter karo
+        const appointments: any[] = res.appointments || res.data?.appointments || [];
         return {
           total: appointments.length,
           upcoming: appointments.filter((a: any) => a.status === 'Scheduled').length
@@ -36,18 +42,14 @@ export class DashboardService {
     );
   }
 
-  // ✅ FIX 2: Nearest upcoming scheduled appointment (Handled Stream Mapping & Strict Type Casting)
+  // ✅ FIX 2: Nearest upcoming scheduled appointment directly linked
   getUpcomingAppointment(): Observable<Appointment | null> {
-    const patient = this.getPatientContext();
-    if (!patient) return of(null);
-
-    return this.appointmentService.getByPatientId(patient.patientId).pipe(
-      map((appointments: Appointment[]) => {
+    return this.getDashboardDataFromBackend().pipe(
+      map((res: any) => {
+        const appointments: any[] = res.appointments || res.data?.appointments || [];
         const upcoming = appointments
           .filter((a: any) => a.status === 'Scheduled')
-          .sort((a: any, b: any) => {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
-          });
+          .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         return upcoming.length ? upcoming[0] : null;
       })

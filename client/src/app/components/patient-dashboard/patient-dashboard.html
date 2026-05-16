@@ -1,6 +1,5 @@
 <div class="dashboard-page">
 
-  <!-- PROFILE HERO -->
   <section class="profile-hero">
     <div class="profile-left">
       <div class="avatar">
@@ -12,7 +11,8 @@
         <h1>{{ patientDetails?.name }}</h1>
 
         <div class="profile-meta">
-          <span>Patient ID: {{ patientDetails?.patientId }}</span>
+          <span>Patient ID : {{ patientDetails?.patientId }}</span>
+          <br>
           <span>{{ patientDetails?.address }}</span>
         </div>
       </div>
@@ -33,12 +33,8 @@
     </div>
   </section>
 
-  <!-- SNAPSHOT -->
   <section class="snapshot">
-    <div>
-      <span>Blood Group</span>
-      <strong>{{ patientDetails?.bloodGroup }}</strong>
-    </div>
+
 
     <div>
       <span>Gender</span>
@@ -47,7 +43,8 @@
 
     <div>
       <span>Phone</span>
-<strong>{{ patientDetails?.contactNumber }}</strong>    </div>
+      <strong>{{ patientDetails?.contactNumber }}</strong>    
+    </div>
 
     <div>
       <span>Email</span>
@@ -55,7 +52,6 @@
     </div>
   </section>
 
-  <!-- MAIN TABS -->
   <div class="tab-buttons">
     <button class="tab-btn"
             [class.active]="activeTab === 'appointments'"
@@ -76,313 +72,250 @@
     </button>
   </div>
 
-  <!-- ================= APPOINTMENTS TAB ================= -->
   <section *ngIf="activeTab === 'appointments'" class="content-card">
 
-  <!-- SUB TABS -->
-  <div class="sub-tab-buttons">
-    <button class="sub-tab-btn"
-            [class.active]="appointmentView === 'upcoming'"
-            (click)="appointmentView = 'upcoming'">
-      Upcoming
-    </button>
+    <div class="sub-tab-buttons">
+      <button class="sub-tab-btn"
+              [class.active]="appointmentView === 'upcoming'"
+              (click)="appointmentView = 'upcoming'">
+        Upcoming
+      </button>
 
-    <button class="sub-tab-btn"
-            [class.active]="appointmentView === 'past'"
-            (click)="appointmentView = 'past'">
-      Past
-    </button>
-  </div>
-
-  <!-- UPCOMING TAB -->
-  <div *ngIf="appointmentView === 'upcoming'">
-
-    <h2>Next Upcoming Appointment</h2>
-
-    <div *ngIf="nextAppointment as next; else noNext"
-         class="appointment-box">
-
-      <h3>Doctor Name: {{ next.doctorName }}</h3>
-
-      <div class="appt-info">
-        <div>
-          <label>Date</label>
-          <strong>{{ next.date  | date:'fullDate'}}</strong>
-        </div>
-
-        <div>
-          <label>Time</label>
-          <strong>{{ next.time }}</strong>
-        </div>
-
-        <div>
-          <label>Status</label>
-          <strong>{{ next.status }}</strong>
-        </div>
-      </div>
-
-      <a class="primary-btn sm"
-         [routerLink]="['/modify', next.appointmentId]">
-        Modify Appointment
-      </a>
+      <button class="sub-tab-btn"
+              [class.active]="appointmentView === 'past'"
+              (click)="appointmentView = 'past'">
+        Past
+      </button>
     </div>
 
-    <ng-template #noNext>
-      <div class="empty-box">
-        <h3>No Upcoming Appointment</h3>
-        <p>You can schedule your next appointment anytime.</p>
-        <a routerLink="/book" class="primary-btn sm">Book Now</a>
-      </div>
-    </ng-template>
+    <div *ngIf="appointmentView === 'upcoming'">
 
-    <!--  ALL UPCOMING APPOINTMENTS -->
-    <h2 class="mt-30">All Upcoming Appointments</h2>
+      <h2>Next Upcoming Appointment</h2>
 
-    <div class="list-row"
-         *ngFor="let item of upcomingAppointments">
+      <div *ngIf="nextAppointment as next; else noNext" class="appointment-box">
+        <h3>Doctor Name: {{ next.doctorName }}</h3>
 
-      <div>
-        <strong>Doctor Name: {{ item.doctorName }}</strong>
-        <span>{{ item.date  | date:'fullDate'}}</span>
-        <span>{{ item.time }}</span>
-      </div>
+        <div class="appt-info">
+          <div>
+            <label>Date</label>
+            <strong>{{ next.date | date:'fullDate'}}</strong>
+          </div>
 
-      <div class="right-actions">
-        <span class="status upcoming">
-          {{ item.status }}
-        </span>
+          <div>
+            <label>Time</label>
+            <strong>{{ next.time }}</strong>
+          </div>
 
-        <!--  MODIFY SHOWN -->
-        <a class="ghost-btn sm"
-           [routerLink]="['/modify', item.appointmentId]">
-          Modify
+          <div>
+            <label>Status</label>
+            <strong>{{ next.status }}</strong>
+          </div>
+        </div>
+
+        <a class="primary-btn sm" [routerLink]="['/modify', next.appointmentId]">
+          Modify Appointment
         </a>
       </div>
-    </div>
 
-  </div>
+      <ng-template #noNext>
+        <div class="empty-box">
+          <h3>No Upcoming Appointment</h3>
+          <p>You can schedule your next appointment anytime.</p>
+          <a routerLink="/book" class="primary-btn sm">Book Now</a>
+        </div>
+      </ng-template>
 
-  <!-- PAST TAB -->
-  <div *ngIf="appointmentView === 'past'">
+      <h2 class="mt-30">All Upcoming Appointments</h2>
 
-    <h2>Past Appointments</h2>
-
-    <div *ngIf="pastAppointments.length; else noPast">
-
-      <div class="list-row"
-           *ngFor="let item of pastAppointments">
-
+      <div class="list-row" *ngFor="let item of upcomingAppointments">
         <div>
           <strong>Doctor Name: {{ item.doctorName }}</strong>
           <span>{{ item.date | date:'fullDate'}}</span>
           <span>{{ item.time }}</span>
         </div>
 
-        <span class="status">
-          {{ item.status }}
-        </span>
-
+        <div class="right-actions">
+          <span class="status upcoming">{{ item.status }}</span>
+          <a class="ghost-btn sm" [routerLink]="['/modify', item.appointmentId]">Modify</a>
+        </div>
       </div>
     </div>
+
+    <div *ngIf="appointmentView === 'past'">
+      <h2>Past Appointments</h2>
+
+      <div *ngIf="pastAppointments.length; else noPast">
+        <div class="list-row" *ngFor="let item of pastAppointments">
+          <div>
+            <strong>Doctor Name: {{ item.doctorName }}</strong>
+            <span>{{ item.date | date:'fullDate'}}</span>
+            <span>{{ item.time }}</span>
+          </div>
+          <span class="status">{{ item.status }}</span>
+        </div>
+      </div>
 
       <ng-template #noPast>
         <div class="empty-box">
           <h3>No Past Appointments</h3>
         </div>
       </ng-template>
-
     </div>
 
   </section>
 
-  <!-- ================= MEDICAL HISTORY ================= -->
   <section *ngIf="activeTab === 'history'" class="content-card">
     <app-past-consultation-list></app-past-consultation-list>
   </section>
 
-  <!-- ================= PERSONAL DETAILS ================= -->
   <section *ngIf="activeTab==='personal'" class="content-card">
 
-    <form #personalForm="ngForm" novalidate>
+    <form #personalForm="ngForm" novalidate (ngSubmit)="savePersonalDetails()">
 
-    <div class="header-row">
-      <h2>Personal Details</h2>
+      <div class="header-row">
+        <h2>Personal Details</h2>
 
-      <button class="primary-btn sm"
-              *ngIf="!isEditingPersonal"
-              (click)="beginEditPersonal()">
-        Update
-      </button>
-    </div>
+        <button type="button" class="primary-btn sm"
+                *ngIf="!isEditingPersonal"
+                (click)="beginEditPersonal()">
+          Update
+        </button>
+      </div>
 
-    <div *ngIf="showSavedBanner" class="saved-banner">
-      ✔ Personal details updated successfully
-    </div>
+      <div *ngIf="showSavedBanner" class="saved-banner">
+        ✔ Personal details updated successfully
+      </div>
 
-   <div class="details-view">
+      <div class="details-view">
 
-  <!-- FULL NAME -->
-  <div>
-    <label>Full Name</label>
-    <strong>{{ patientDetails?.name }}</strong>
-  </div>
+        <div>
+          <label>Full Name</label>
+          <strong>{{ patientDetails?.name }}</strong>
+        </div>
 
-  <!-- PATIENT ID -->
-  <div>
-    <label>Patient ID</label>
-    <strong>{{ patientDetails?.patientId }}</strong>
-  </div>
+        <div>
+          <label>Patient ID</label>
+          <strong>{{ patientDetails?.patientId }}</strong>
+        </div>
 
-  <!-- GENDER -->
-  <div>
-    <label>Gender</label>
-    <strong>{{ patientDetails?.gender }}</strong>
-  </div>
+        <div>
+          <label>Gender</label>
+          <strong>{{ patientDetails?.gender }}</strong>
+        </div>
 
-  <!-- AGE -->
-  <div>
-    <label>Age</label>
-    <strong>{{ patientDetails?.age }}</strong>
-  </div>
+        <div>
+          <label>Age</label>
+          <strong>{{ patientDetails?.age }}</strong>
+        </div>
 
-  <!-- BLOOD GROUP -->
-  <div>
-    <label>Blood Group</label>
-    <strong>{{ patientDetails?.bloodGroup }}</strong>
-  </div>
+        <div>
+          <label>Blood Group</label>
+          <strong>{{ patientDetails?.bloodGroup }}</strong>
+        </div>
 
-  <!-- PHONE ✅ -->
-  <div>
-  <label>Phone</label>
+        <div>
+          <label>Phone</label>
+          <strong *ngIf="!isEditingPersonal">
+            {{ patientDetails?.contactNumber }}
+          </strong>
+          
+          <ng-container *ngIf="isEditingPersonal">
+            <div class="field-box">
+              <input
+                type="text"
+                name="contact"
+                [(ngModel)]="editableDetails.contactNumber"
+                required
+                minlength="10"
+                maxlength="10"
+                pattern="^[0-9]{10}$"
+                #contact="ngModel" />
+            </div>
 
- 
-  <strong *ngIf="!isEditingPersonal">
-    {{ patientDetails?.contactNumber }}
-  </strong>
-  <div class="field-box">
-    <input
-      type="text"
-      name="contactNumber"
-      [(ngModel)]="editableDetails.contactNumber"
-      required
-      minlength="10"
-      maxlength="10"
-      pattern="^[0-9]{10}$"
-      #contactNumber="ngModel" />
-  </div>
+            <small class="error" *ngIf="contact.invalid && contact.touched">
+              <span *ngIf="contact.errors?.['required']">Phone number is required</span>
+              <span *ngIf="contact.errors?.['pattern']">Phone must be exactly 10 digits</span>
+            </small>
+          </ng-container>
+        </div>
 
-  <ng-container *ngIf="isEditingPersonal">
-  <div class="field-box">
-    <input
-      type="text"
-      name="contact"
-      [(ngModel)]="editableDetails.contactNumber"
-      required
-      minlength="10"
-      maxlength="10"
-      pattern="^[0-9]{10}$"
-      #contact="ngModel" />
-    </div>
+        <div>
+          <label>Email</label>
+          <strong *ngIf="!isEditingPersonal">
+            {{ patientDetails?.email }}
+          </strong>
 
-    <small class="error" *ngIf="contact.invalid && contact.touched">
-      <span *ngIf="contact.errors?.['required']">
-        Phone number is required
-      </span>
-      <span *ngIf="contact.errors?.['pattern']">
-        Phone must be exactly 10 digits
-      </span>
-    </small>
-  </ng-container>
-  
-</div>
+          <ng-container *ngIf="isEditingPersonal">
+            <div class="field-box">
+              <input
+                type="email"
+                name="email"
+                [(ngModel)]="editableDetails.email"
+                required
+                email
+                #email="ngModel" />
+            </div>
+            <small class="error" *ngIf="email.invalid && email.touched">
+              <span *ngIf="email.errors?.['required']">Email is required</span>
+              <span *ngIf="email.errors?.['email']">Enter a valid email address</span>
+            </small>
+          </ng-container>
+        </div>
 
-  <!-- EMAIL ✅ -->
-<div>
-  <label>Email</label>
+        <div class="wide">
+          <label>Address</label>
+          <strong *ngIf="!isEditingPersonal">
+            {{ patientDetails?.address }}
+          </strong>
 
-  <strong *ngIf="!isEditingPersonal">
-    {{ patientDetails?.email }}
-  </strong>
+          <ng-container *ngIf="isEditingPersonal">
+            <div class="field-box">
+              <input
+                type="text"
+                name="address"
+                [(ngModel)]="editableDetails.address"
+                required
+                #address="ngModel" />
+            </div>
+            <small class="error" *ngIf="address.invalid && address.touched">
+              Address is required
+            </small>
+          </ng-container>
+        </div>
 
-  <ng-container *ngIf="isEditingPersonal">
-    <div class="field-box">
-    <input
-      type="email"
-      name="email"
-      [(ngModel)]="editableDetails.email"
-      required
-      email
-      #email="ngModel" />
-    </div>
-    <small class="error" *ngIf="email.invalid && email.touched">
-      <span *ngIf="email.errors?.['required']">
-        Email is required
-      </span>
-      <span *ngIf="email.errors?.['email']">
-        Enter a valid email address
-      </span>
-    </small>
-  </ng-container>
-</div>
+        <div class="wide"> <label>Allergies</label>
+          <strong *ngIf="!isEditingPersonal">
+            {{ patientDetails?.allergy?.join(', ') || 'None' }}
+          </strong>
 
-  <!-- ADDRESS ✅ -->
-  <div class="wide">
-  <label>Address</label>
+          <div class="field-box" *ngIf="isEditingPersonal">
+            <input
+              type="text"
+              name="allergyStr"
+              placeholder="e.g. Peanuts, Penicillin"
+              [(ngModel)]="editableDetails.allergyStr" />
+          </div>
+        </div>
 
-  <strong *ngIf="!isEditingPersonal">
-    {{ patientDetails?.address }}
-  </strong>
+      </div>
 
-  <ng-container *ngIf="isEditingPersonal">
-    <div class="field-box">
+      <div class="form-actions right-align" *ngIf="isEditingPersonal">
+        <button
+          type="submit"
+          class="primary-btn sm"
+          [disabled]="!isPersonalDetailsChanged || personalForm.invalid">
+          Save
+        </button>
 
-    <input
-      type="text"
-      name="address"
-      [(ngModel)]="editableDetails.address"
-      required
-      #address="ngModel" />
-    </div>
-      
+        <button
+          type="button"
+          class="ghost-btn sm"
+          (click)="cancelPersonalEdit()">
+          Cancel
+        </button>
+      </div>
 
-    <small class="error" *ngIf="address.invalid && address.touched">
-      Address is required
-    </small>
-  </ng-container>
-</div>
-  <!-- ALLERGIES (optional) -->
-  <div>
-    <label>Allergies</label>
+    </form>
+  </section>
 
-    <strong *ngIf="!isEditingPersonal">
-      {{ patientDetails?.allergy?.join(', ') }}
-    </strong>
-
-    <input
-      *ngIf="isEditingPersonal"
-      type="text"
-      [(ngModel)]="editableDetails.allergy" />
-  </div>
-
-</div>
-
-<!-- ✅ ACTION BUTTONS (RIGHT ALIGNED) -->
-<div class="form-actions right-align" *ngIf="isEditingPersonal">
-
-  <button
-  class="primary-btn sm"
-  [disabled]="!isPersonalDetailsChanged || personalForm.invalid"
-  (click)="savePersonalDetails()">
-  Save
-</button>
-
-  <button
-    class="ghost-btn sm"
-    (click)="cancelPersonalEdit()">
-    Cancel
-  </button>
-
-</div>
-</form>
-</section>
 </div>

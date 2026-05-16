@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; // 👈 Dynamic slots hit karne ke liye
+import { HttpClient } from '@angular/common/http'; 
 
 import { AppointmentService } from '../../services/appointment.service';
 import { DoctorService } from '../../services/doctor.service';
@@ -30,7 +30,6 @@ export class Modifyappointment implements OnInit {
   availableDates: string[] = [];
   timeSlots: TimeSlot[] = [];
 
-  // Angular 17+ inject pattern used
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private appointmentService = inject(AppointmentService);
@@ -41,27 +40,32 @@ export class Modifyappointment implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    // Route parameter se appointmentId nikala
     const id = this.route.snapshot.paramMap.get('appointmentId') || '';
+    console.log("Fetching Appointment ID for modification:", id);
     
-    // ✅ FIX 1: Real backend database se active appointment data fetch kiya via subscription
+    // ✅ FIX 1: Safe wrapper handle for incoming backend response objects
     this.appointmentService.getById(id).subscribe({
-      next: (appt: any) => {
-        if (!appt) {
+      next: (res: any) => {
+        console.log("Raw Appointment data received:", res);
+        
+        // Agar data backend se nested key 'data' ya 'appointment' me aa raha ho
+        const apptData = res.appointment || res.data || res;
+        
+        if (!apptData) {
+          console.error("No valid appointment body found!");
           this.router.navigate(['/patient']);
           return;
         }
 
-        this.appointment = { ...appt };
+        this.appointment = { ...apptData };
 
-        // Appointment milte hi uske doctor ki detail backend se nikalenge
-        this.doctorService.getDoctorById(appt.doctorId).subscribe({
+        // Doctor data fetch fallback trigger
+        this.doctorService.getDoctorById(this.appointment.doctorId).subscribe({
           next: (data: any) => {
-            // Mongoose object data validation logic check wrapper
-            const doctorData = data?.doctor || data;
+            const doctorData = data?.doctor || data?.allDoctor?.[0] || data;
             if (doctorData) {
               this.doctor = doctorData;
-              this.generateTimeSlots(); // ✅ Load dynamic database slots
+              this.generateTimeSlots(); 
             }
           },
           error: (err: any) => console.error('Error fetching doctor detail:', err)
@@ -76,7 +80,6 @@ export class Modifyappointment implements OnInit {
     this.generateNextFiveDays();
   }
 
-  /* ---------- DATES ---------- */
   private generateNextFiveDays(): void {
     const today = new Date();
     this.availableDates = [];
@@ -96,26 +99,23 @@ export class Modifyappointment implements OnInit {
     }
   }
 
-  /* ---------- FETCH LIVE TIME SLOTS FROM BACKEND ---------- */
   generateTimeSlots(): void {
     this.timeSlots = [];
-
     if (!this.appointment || !this.appointment.doctorId || !this.appointment.date) return;
 
     const doctorId = this.appointment.doctorId;
     const date = this.appointment.date;
 
-    // ✅ FIX 2: Mock array filter hata kar real dynamic slots API call mari
     const url = `http://localhost:5000/api/availability/slots?doctorId=${doctorId}&date=${date}`;
     
     this.http.get<{ status: boolean, slots: any[] }>(url).subscribe({
       next: (res: any) => {
         if (res && res.slots) {
-          this.timeSlots = res.slots.map((s:any) => ({
+          this.timeSlots = res.slots.map((s: any) => ({
             time: s.time,
             disabled: s.isBooked
           }));
-          this.cdr.detectChanges(); // Force push view updates
+          this.cdr.detectChanges(); 
         }
       },
       error: (err: any) => {
@@ -130,10 +130,20 @@ export class Modifyappointment implements OnInit {
   updateAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
-    // ✅ FIX 3: Passed 2 arguments (id, payload) aur response channel ko subscribe kiya
-    this.appointmentService.update(this.appointment.appointmentId, this.appointment).subscribe({
+    // ✅ FIX 2: Dynamic explicit clean payload conversion according to updated controller body vars
+    const updatePayload = {
+      date: this.appointment.date,
+      time: this.appointment.time,
+      mode: this.appointment.mode || 'In-person',
+      reason: this.appointment.reason || 'General Consultation',
+      status: 'Scheduled'
+    };
+
+    console.log("🚀 SENDING MODIFICATION PAYLOAD:", updatePayload);
+
+    this.appointmentService.update(this.appointment.appointmentId, updatePayload).subscribe({
       next: (res: any) => {
-        console.log('Appointment updated successfully in database:', res);
+        console.log('🎉 SUCCESS: Appointment updated in database:', res);
         this.router.navigate(['/patient']);
       },
       error: (err: any) => console.error('Update operation failed:', err)
@@ -144,12 +154,16 @@ export class Modifyappointment implements OnInit {
   cancelAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
-    // Direct update endpoint par status object update push mari
-    const cancelPayload = { status: 'Cancelled' };
+    // Direct update query payload for Cancellation bypass
+    const cancelPayload = { 
+      status: 'Cancelled' 
+    };
+
+    console.log("🚀 SENDING CANCELLATION PAYLOAD:", cancelPayload);
 
     this.appointmentService.update(this.appointment.appointmentId, cancelPayload).subscribe({
       next: (res: any) => {
-        console.log('Appointment cancelled successfully:', res);
+        console.log('🎉 SUCCESS: Appointment cancelled successfully:', res);
         this.router.navigate(['/patient']);
       },
       error: (err: any) => console.error('Cancellation failed:', err)

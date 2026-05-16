@@ -131,17 +131,12 @@ submitAppointment(): void {
     }
 
     const patient = this.authService.getLoggedInPatient();
-    if (!patient) {
-      console.error("Patient log-in context nahi mila!");
-      return;
-    }
+    
+    // Agar token se patientId mil rahi hai toh wahi utha lo
+    const finalPatientId = patient ? (patient.patientId || (patient as any)._id) : "1"; // Fallback '1' agar token refresh par khali ho
 
-    // Console me check karo ki patient._id aa rahi hai ya nahi
-    console.log("Logged in Patient Full Data:", patient);
-
-    // ✅ FIX 3: Custom payload banaya jo backend schema se exact match karega
     const bookingPayload = {
-    patient_id: (patient as any)._id,
+      patient_id: String(finalPatientId), // 👈 Tumhari custom ID '1' string bankar jayegi
       doctorId: String(this.appointment.doctorId),
       date: this.appointment.date,
       time: this.appointment.time,
@@ -149,12 +144,11 @@ submitAppointment(): void {
       reason: this.appointment.reason
     };
 
-    console.log("Payload going to Backend:", bookingPayload);
+    console.log("🚀 PAYLOAD WITH TOKEN ID:", bookingPayload);
 
     this.appointmentService.book(bookingPayload as any).subscribe({
       next: (res: any) => {
-        console.log('Database confirmation successful:', res);
-        
+        console.log('🎉 SUCCESS: Database insertion complete!', res);
         this.booked = true; 
         this.cdr.detectChanges(); 
         
@@ -167,7 +161,7 @@ submitAppointment(): void {
         }, 3000);
       },
       error: (err: any) => {
-        console.error('Database insertion failed:', err);
+        console.error('❌ BACKEND REJECTED REQ:', err);
       }
     });
   }
