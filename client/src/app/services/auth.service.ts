@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Patient } from '../models/patient.model';
 
-// ✅ Dead mock reference ko bypass karne ke liye local empty array declare kiya
 const PATIENTS: any[] = [];
 
 @Injectable({

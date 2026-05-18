@@ -3,6 +3,8 @@ const Appointment = require('../models/appointment');
 const {decodedData} = require('../utils/decodedDate');
 
 
+
+
 exports.getAllDoctorInfo = async(req,res,next)=>{
     try {
         const allDoctor = await Doctor.find({});
@@ -22,10 +24,9 @@ exports.getAllDoctorInfo = async(req,res,next)=>{
 
 exports.getDoctor=async(req,res,next)=>{
     try{
-        const decoded=await decodedData(req,res);
-        console.log(decoded);
-        const doctorID= decoded.doctorId;
-        const doctorInfo= await Doctor.findOne({doctorID:doctorID});
+        const currentDoctorId = req.doctor.dId;
+        
+        const doctorInfo= await Doctor.findOne({doctorID:currentDoctorId}).select('-password');
         
         if(doctorInfo){
             return res.status(200).json(doctorInfo)
@@ -42,7 +43,7 @@ exports.getDoctor=async(req,res,next)=>{
 exports.getDoctorById = async(req,res,next)=>{
     try{
         const id= req.params.id;
-        const doctorInfo= await Doctor.findOne({doctorId:id});
+        const doctorInfo= await Doctor.findOne({doctorId:id}).select('-password');
         if(doctorInfo){
             return res.status(200).json(doctorInfo);
         }else {
@@ -104,9 +105,11 @@ exports.getAllAppointments = async(req,res,next)=>{
 
 exports.getUpcomingAppointments = async(req,res,next)=>{
     try{
+        const currentDoctorId = req.doctor.dId;
         const nowDate= new Date();
 
         const upcomingAppointments = await Appointment.find({
+            doctorId: String(currentDoctorId),
             $or:[
                 {date:{$gt:nowDate}},
                 {
@@ -133,6 +136,8 @@ exports.getUpcomingAppointments = async(req,res,next)=>{
 
 exports.getPastAppointments = async(req,res,next)=>{
     try{
+
+        const currentDoctorId = req.doctor.dId;
         const now= new Date();
         const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -142,6 +147,7 @@ exports.getPastAppointments = async(req,res,next)=>{
         });
 
         const pastAppointments = await Appointment.find({
+            doctorId:String(currentDoctorId),
             $or:[
                 { date: { $lt: startOfToday } },
                 {

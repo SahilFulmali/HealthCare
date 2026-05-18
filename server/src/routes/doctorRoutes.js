@@ -9,25 +9,27 @@ const {
     getAllAppointments,
     getUpcomingAppointments,
     getPastAppointments} = require('../controllers/doctorController');
+const { verifyDoctor } = require('../middleware/auth');
 
 // router.get('/profile',profileInfo);
 
 
-router.get('/allDoctor',getAllDoctorInfo);
+router.get('/allDoctor' ,getAllDoctorInfo);
+router.get('/getDoctorById/:id' ,getDoctorById);
+router.get('/getDoctor',verifyDoctor ,getDoctor);
+
 
 //add this in doctor Controller
 
-router.delete('/deleteAppointment/:appointmentId',deleteAppointment);
+router.delete('/deleteAppointment/:id',verifyDoctor ,deleteAppointment);
 
-router.get('/getDoctor',getDoctor);
 
-router.get('/getDoctorById/:id',getDoctorById);
 
-router.get('/allAppointments',getAllAppointments);
+router.get('/allAppointments',verifyDoctor ,getAllAppointments);
 
-router.get('/upcomingAppointments',getUpcomingAppointments);
+router.get('/upcomingAppointments',verifyDoctor ,getUpcomingAppointments);
 
-router.get('/pastAppointments',getPastAppointments);
+router.get('/pastAppointments',verifyDoctor ,getPastAppointments);
 
 
 

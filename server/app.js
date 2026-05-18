@@ -2,6 +2,8 @@ require("dotenv").config()
 const express = require ('express'); 
 const app = express();
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
 const availabilityRoutes = require('./src/routes/doc_availabilityRoutes');
 
 app.use(cors({
@@ -11,7 +13,8 @@ app.use(cors({
 
 // Set the request Body 
 app.use(express.json());
-app.use(express.urlencoded({extended : true}))
+app.use(express.urlencoded({extended : true}));
+app.use(cookieParser());
 
 //MIDDLEWARES
 const logger = require('./src/middleware/logger')
@@ -40,6 +43,7 @@ app.use('/api/availability', availabilityRoutes);
 
 // Error handling
 //app.use(errorhandler)
+
 
 module.exports = app ; 
 

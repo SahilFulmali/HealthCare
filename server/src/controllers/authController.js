@@ -103,20 +103,89 @@ exports.loginPatient = async (req, res) => {
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn : process.env.JWT_EXPIRY})
 
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV ==='production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    }
+
+    res.cookie('token',token,cookieOptions);
+
+
 
     res.status(200).json({
       message: 'Login successful',
-      token: token,
+    });
+
+  }catch (error) {
+    console.error(" CRITICAL LOGIN ERROR TRACE:", error); // Yeh aapko terminal me exact wajah batayega
+    return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message // Frontend ko bhi pata chal jayega
+    });
+}
+};
+
+
+exports.getMe = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No session token found' });
+    }
+
+    // Token decode karenge
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Database se patient ka live profile data nikalenge
+    const user = await Patient.findOne({ patientId: decoded.pId });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User session invalid or not found' });
+    }
+
+    // Sirf safe public data frontend ko return karenge
+    return res.status(200).json({
+      success: true,
       user: {
-        id: user._id,
+        id: user.patientId,
+        patientId: user.patientId,
         name: user.name,
         email: user.email
       }
     });
 
   } catch (error) {
-    res.status(500).json({
-      message: 'Server error',
+    return res.status(401).json({
+      success: false,
+      message: 'Session expired or invalid token',
+      error: error.message
+    });
+  }
+};
+
+
+
+exports.logoutPatient = async (req, res) => {
+  try {
+    // Cookie ko clear karne ke liye hum use turant expire kar dete hain
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Logout failed',
       error: error.message
     });
   }

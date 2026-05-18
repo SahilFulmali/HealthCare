@@ -11,6 +11,14 @@ const doctorSchema= new mongoose.Schema({
     type: String,
     required:true
   },
+
+  //Devang added
+  password :{
+    type: String,
+    required : true
+  },
+
+  
   experience: {
     type: Number,
     min: 0,
@@ -32,6 +40,12 @@ const doctorSchema= new mongoose.Schema({
   },
 
   degree:[{type:String}],
+ 
+  //Devang added
+  role: {
+    type: String,
+    default: 'DOCTOR'
+  },
 
   appointments: [
     {

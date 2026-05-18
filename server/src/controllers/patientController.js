@@ -5,7 +5,13 @@ const Doctor = require('../models/doctor');
 
 exports.getPatientDashboard = async (req,res,next) =>{
     try{
+
         const patientId=String(req.params.patientId);
+
+        if(String(req.user.pId) !== patientId){
+            return res.status(403).json({message : "You are not authorized"});
+        }
+
         const patientList = await Patient.findOne({patientId:patientId});
 
         if(!patientList){
@@ -15,6 +21,7 @@ exports.getPatientDashboard = async (req,res,next) =>{
         const appointments = await Appointment.find({patient:patientId});
 
         res.status(200).json({message:'Patient Dashboard Fetched Successfully',patientList,appointments});
+    
     }catch(err){
         next(err);
     }

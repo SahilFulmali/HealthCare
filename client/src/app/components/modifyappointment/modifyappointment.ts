@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { AppointmentService } from '../../services/appointment.service';
 import { DoctorService } from '../../services/doctor.service';
+import { Auth } from '../../services/auth'; // 🚀 FIXED: Secure cookie-based Auth service import
 
 import { Appointment } from '../../models/appointment.model';
 import { Doctor } from '../../models/doctor.model';
@@ -36,19 +37,37 @@ export class Modifyappointment implements OnInit {
   private doctorService = inject(DoctorService);
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private authService = inject(Auth); // 🚀 FIXED: Inject secure cookie service
 
   constructor() {}
 
   ngOnInit(): void {
+    // 🚀 PURE COOKIE CHECK: Agar refresh par signal empty hai, pehle state restore karo
+    if (!this.authService.authenticated()) {
+      this.authService.checkSession().subscribe({
+        next: () => {
+          if (!this.authService.authenticated()) {
+            // No valid cookie? Bounce back to login instantly
+            this.router.navigate(['/login-user']);
+            return;
+          }
+          this.loadComponentData(); // Condition clear, data uthao
+        }
+      });
+    } else {
+      this.loadComponentData(); // Pehle se logged in hai, direct load karo
+    }
+  }
+
+  private loadComponentData(): void {
     const id = this.route.snapshot.paramMap.get('appointmentId') || '';
     console.log("Fetching Appointment ID for modification:", id);
     
-    // ✅ FIX 1: Safe wrapper handle for incoming backend response objects
+    // Wrapper handle for incoming backend response objects
     this.appointmentService.getById(id).subscribe({
       next: (res: any) => {
         console.log("Raw Appointment data received:", res);
         
-        // Agar data backend se nested key 'data' ya 'appointment' me aa raha ho
         const apptData = res.appointment || res.data || res;
         
         if (!apptData) {
@@ -113,7 +132,7 @@ export class Modifyappointment implements OnInit {
         if (res && res.slots) {
           this.timeSlots = res.slots.map((s: any) => ({
             time: s.time,
-            disabled: s.isBooked
+            disabled: s.isBooked && s.time !== this.appointment.time // User ka current slot select hone par lock na ho
           }));
           this.cdr.detectChanges(); 
         }
@@ -130,7 +149,6 @@ export class Modifyappointment implements OnInit {
   updateAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
-    // ✅ FIX 2: Dynamic explicit clean payload conversion according to updated controller body vars
     const updatePayload = {
       date: this.appointment.date,
       time: this.appointment.time,
@@ -141,6 +159,7 @@ export class Modifyappointment implements OnInit {
 
     console.log("🚀 SENDING MODIFICATION PAYLOAD:", updatePayload);
 
+    // Baki code same secure method use karega
     this.appointmentService.update(this.appointment.appointmentId, updatePayload).subscribe({
       next: (res: any) => {
         console.log('🎉 SUCCESS: Appointment updated in database:', res);
@@ -154,7 +173,6 @@ export class Modifyappointment implements OnInit {
   cancelAppointment(): void {
     if (!this.appointment || !this.appointment.appointmentId) return;
 
-    // Direct update query payload for Cancellation bypass
     const cancelPayload = { 
       status: 'Cancelled' 
     };
